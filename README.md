@@ -54,5 +54,5 @@ for setup, current format requirements and next gameplay checkpoints.
 
 ## Not in this repo
 
-- Rendered Doom frames, movies and sprite/texture images (derived from DOOM1.WAD) are not committed. Regenerate with the scripts and your own shareware IWAD (see docs/doom-vscode-handoff.md).
+- The Doom IWAD and decoded lump data. Rendered frames, movies and images are included (Dan, 2026-11-25: fine to host publicly).
 - Asteroids / Pac-Man ROM data: never committed; builds fall back to hand-made shapes.
