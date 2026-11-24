@@ -12,7 +12,7 @@ Read `docs/doom-translation.md`, then `docs/doom-vscode-handoff.md`. Original do
 - `docs/checkpoints/`: per-checkpoint READMEs (newest: `translated/PROJECT_README.md`).
 - Tests: `AWTO_DOOM_WAD=wads/doom1.wad pytest tests/test_doom_*.py`. SDCC tests need `AWTO_DOOM_SDCC`, `AWTO_DOOM_LINKER`, `AWTO_DOOM_LIB_*`. A few tests need awto-ddc files (`scripts/dw8051_model.json`, `fw/sdk` headers) until the awto-ddc submodule lands (awto-au/awto-ddc#345).
 
-# Native 8051 Doom: soldier shots and imp fireballs
+## Earlier checkpoint: soldier shots and imp fireballs (24 Nov 2026)
 
 Updated 24 November 2026. Start with source/docs/doom-projectiles.md.
 Repository https://github.com/awto-au/awto-ddc
@@ -70,3 +70,11 @@ for setup, current format requirements and next gameplay checkpoints.
 
 - Registered Doom / Doom II WADs (only the shareware `wads/doom1.wad` is included).
 - Asteroids / Pac-Man ROM data: never committed; builds fall back to hand-made shapes.
+
+## Licence
+
+- Repo: GPL-2.0 (`LICENSE`); the renderer derives from Doom8088 (GPL v2, `fw/doom/vendor/Doom8088/`, upstream https://github.com/FrenkelS/Doom8088).
+- `wads/doom1.wad`: id Software shareware Doom 1.9, unmodified, under id's shareware terms (not GPL).
+- `tools/pacman_osd/third_party/emu8051/`: MIT, Jari Komppa (own LICENSE).
+- Pac-Man / Asteroids: no ROM data; ROM-derived tables are generated locally and gitignored.
+- Part of the awto-ddc scaler project: https://github.com/awto-au/awto-ddc
