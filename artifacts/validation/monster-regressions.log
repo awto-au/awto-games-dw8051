@@ -1,0 +1,61 @@
+.F.................................................................s     [100%]
+=================================== FAILURES ===================================
+_____________ test_native_projection_transparent_holes_and_palette _____________
+
+sprite_renderer = (PosixPath('/workspace/scratch/8f0cb3cb5292/jwadutil-reference/src/main/resources/doom1.wad'), PosixPath('/tmp/pytest-of-agent/pytest-0/sprite-renderer0'))
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f0161ec32f0>
+
+    def test_native_projection_transparent_holes_and_palette(sprite_renderer,monkeypatch):
+        wad,out=sprite_renderer
+        pose=dict(x=2184*65536,y=-2392*65536,angle=0,viewz=41*65536)
+        def empty(wad,things,image,load):
+            load(0xD0010,bytes(16),'empty test things')
+            return dict(count=0)
+        monkeypatch.setattr(A,'pack_monsters',empty)
+        R.simulate(wad,out,initial_pose=pose,latency=64)
+        background=Image.open(out/'e1m1-native.png').copy()
+        def fixture(wad,things,image,load):
+            # One transparent, asymmetric patch in open space, palette index 176.
+            load(0xD0010,struct.pack('<H14xhhHHi',1,2272,-2392,0,0,0),'test thing')
+            raw=bytearray(16*256)
+            for x in range(16):
+                for y in range(32):raw[x*256+y*2:x*256+y*2+2]=bytes((176,int((x+y)%3!=0)))
+            load(0x400010,raw,'test transparent patch')
+            load(0xE0010,struct.pack('<4hIB3x',16,32,8,32,0x400010,0)*8,'test rotations')
+            return dict(count=1)
+        monkeypatch.setattr(A,'pack_monsters',fixture)
+        r,_=R.simulate(wad,out,initial_pose=pose,latency=64,drop_every=7)
+        actual=Image.open(out/'e1m1-native.png')
+        expected=background.copy();pixels=0
+        # Independent host oracle evaluates the supplied fixture only. It never
+        # supplies rendered pixels, screen positions or visibility to the CPU.
+        xs=30*65536//88;ys=128*65536//88
+        left=30*65536-8*xs;top=64*65536+9*ys
+        sxstep=(1<<32)//xs;systep=(1<<32)//ys
+        palette=A.Wad(wad)['PLAYPAL'][:768]
+        for x in range(60):
+            for y in range(128):
+                if x<left//65536 or y<top//65536:continue
+                sx=(((x*65536-left)*sxstep)>>16)>>16
+                sy=(((y*65536-top)*systep)>>16)>>16
+                if 0<=sx<16 and 0<=sy<32 and (sx+sy)%3:
+                    expected.putpixel((x,y),tuple(palette[176*3:176*3+3]));pixels+=1
+>       assert actual.tobytes()==expected.tobytes()
+E       assert b"\x00\x00;\x...x00;\x00\x00;" == b"\x00\x00;\x...x00;\x00\x00;"
+E         
+E         At index 7644 diff: b'\xff' != b'\x00'
+E         Use -v to get more diff
+
+tests/test_doom_sprites.py:74: AssertionError
+=============================== warnings summary ===============================
+../../../../opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/anyio/pytest_plugin.py:14
+  /opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/anyio/pytest_plugin.py:14: PytestRemovedIn10Warning: _pytest.python.CallSpec2 has been renamed to CallSpec.
+  The CallSpec2 alias will be removed in pytest 10.
+  Update imports to use CallSpec instead.
+  See https://docs.pytest.org/en/stable/deprecations.html#callspec2-renamed
+    from _pytest.python import CallSpec2
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_doom_sprites.py::test_native_projection_transparent_holes_and_palette
+1 failed, 66 passed, 1 skipped, 1 warning in 81.64s (0:01:21)

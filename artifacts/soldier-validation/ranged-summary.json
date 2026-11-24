@@ -1,0 +1,33 @@
+{
+  "unique_tests_passed": 98,
+  "regression_passed": 83,
+  "combat_passed": 14,
+  "arithmetic_passed": 1,
+  "initial_regression_skip": "Arithmetic check subsequently enabled and passed separately",
+  "frames": 130,
+  "max_frame_ms": 248.0762733365451,
+  "model_duration_seconds": 20.976503650321703,
+  "final_combat": {
+    "health": 70,
+    "ammo": 41,
+    "shots": 9,
+    "hits": 2,
+    "kills": 2,
+    "damage": 30,
+    "attacks": 3,
+    "dead": 0,
+    "wait": 0,
+    "flash": 0,
+    "hurt": 0,
+    "spare": 0,
+    "target": 0,
+    "verified": true
+  },
+  "stack_high": 219,
+  "stack_wraps": 0,
+  "ddr_invalid": 0,
+  "ddr_hazards": 0,
+  "hardware_tested": false,
+  "committed": false,
+  "pushed": false
+}

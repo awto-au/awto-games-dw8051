@@ -1,0 +1,194 @@
+ASxxxx Linker V03.00/V05.40 + sdld,  page 1.
+Hexadecimal  [32-Bits]
+
+Area                                    Addr        Size        Decimal Bytes (Attributes)
+--------------------------------        ----        ----        ------- ----- ------------
+CABS                                00000000    00000000 =           0. bytes (ABS,CON,CODE)
+
+      Value  Global                              Global Defined In Module
+      -----  --------------------------------   ------------------------
+C:   00000000  l_BIT_BANK                      
+C:   00000000  l_BSEG                          
+C:   00000000  l_BSEG_BYTES                    
+C:   00000000  l_CABS                          
+C:   00000000  l_CONST                         
+C:   00000000  l_ENTRY                         
+C:   00000000  l_GSFINAL                       
+C:   00000000  l_GSINIT                        
+C:   00000000  l_GSINIT0                       
+C:   00000000  l_GSINIT1                       
+C:   00000000  l_GSINIT2                       
+C:   00000000  l_GSINIT3                       
+C:   00000000  l_GSINIT4                       
+C:   00000000  l_GSINIT5                       
+C:   00000000  l_HOME                          
+C:   00000000  l_IABS                          
+C:   00000000  l_ISEG                          
+C:   00000000  l_OSEG                          
+C:   00000000  l_PSEG                          
+C:   00000000  l_REG_BANK_1                    
+C:   00000000  l_REG_BANK_2                    
+C:   00000000  l_REG_BANK_3                    
+C:   00000000  l_RSEG                          
+C:   00000000  l_RSEG0                         
+C:   00000000  l_RSEG1                         
+C:   00000000  l_SSEG                          
+C:   00000000  l_XABS                          
+C:   00000000  l_XINIT                         
+C:   00000000  l_XISEG                         
+C:   00000000  l__CODE                         
+C:   00000000  s_BSEG                          
+C:   00000000  s_CABS                          
+C:   00000000  s_DSEG                          
+C:   00000000  s_ENTRY                         
+C:   00000000  s_ENTRY0                        
+C:   00000000  s_GSFINAL                       
+C:   00000000  s_GSINIT                        
+C:   00000000  s_GSINIT0                       
+C:   00000000  s_GSINIT1                       
+C:   00000000  s_GSINIT2                       
+C:   00000000  s_GSINIT3                       
+C:   00000000  s_GSINIT4                       
+C:   00000000  s_GSINIT5                       
+C:   00000000  s_HOME                          
+C:   00000000  s_IABS                          
+C:   00000000  s_PSEG                          
+C:   00000000  s_REG_BANK_0                    
+C:   00000000  s_RSEG                          
+C:   00000000  s_RSEG0                         
+C:   00000000  s_RSEG1                         
+ASxxxx Linker V03.00/V05.40 + sdld,  page 2.
+Hexadecimal  [32-Bits]
+
+Area                                    Addr        Size        Decimal Bytes (Attributes)
+--------------------------------        ----        ----        ------- ----- ------------
+CABS                                00000000    00000000 =           0. bytes (ABS,CON,CODE)
+
+      Value  Global                              Global Defined In Module
+      -----  --------------------------------   ------------------------
+C:   00000000  s_XABS                          
+C:   00000008  l_DSEG                          
+C:   00000008  l_REG_BANK_0                    
+C:   00000008  s_REG_BANK_1                    
+C:   00000009  l_ENTRY0                        
+C:   0000000A  bp                              
+C:   00000010  s_REG_BANK_2                    
+C:   00000018  s_BIT_BANK                      
+C:   00000018  s_ISEG                          
+C:   00000018  s_OSEG                          
+C:   00000018  s_REG_BANK_3                    
+C:   00000018  s_SSEG                          
+C:   00000020  s_BSEG_BYTES                    
+C:   00000020  s__CODE                         
+C:   0000002E  l_XSEG                          
+C:   00000100  l_IRAM                          
+C:   00000EDD  l_CSEG                          
+C:   00005010  s_CSEG                          
+C:   00007000  s_CONST                         
+C:   00007000  s_XINIT                         
+C:   0000A072  _PlayerDamage                   
+C:   0000AD88  _DdrPointer                     
+C:   0000C776  _MotionVisible                  
+C:   0000DBFC  _actor_things                   
+C:   0000DBFF  _actor_count                    
+C:   0000DEF2  s_XSEG                          
+C:   0000DF20  s_XISEG                         
+C:   0000E14C  _FixedDiv                       
+C:   0000E176  __gptrget                       
+C:   0000E1E6  __gptrput                       
+C:   0000EBFF  __mulint                        
+C:   0000F6A0  _motion_state                   
+
+ASxxxx Linker V03.00/V05.40 + sdld,  page 3.
+Hexadecimal  [32-Bits]
+
+Area                                    Addr        Size        Decimal Bytes (Attributes)
+--------------------------------        ----        ----        ------- ----- ------------
+ENTRY0                              00000000    00000009 =           9. bytes (ABS,CON,CODE)
+
+      Value  Global                              Global Defined In Module
+      -----  --------------------------------   ------------------------
+ASxxxx Linker V03.00/V05.40 + sdld,  page 4.
+Hexadecimal  [32-Bits]
+
+Area                                    Addr        Size        Decimal Bytes (Attributes)
+--------------------------------        ----        ----        ------- ----- ------------
+.  .ABS.                            00000000    00000000 =           0. bytes (ABS,CON)
+
+      Value  Global                              Global Defined In Module
+      -----  --------------------------------   ------------------------
+     00000000  .__.ABS.                           projectile_engine
+     0000F720  _projectile_info                   projectile_engine
+
+ASxxxx Linker V03.00/V05.40 + sdld,  page 5.
+Hexadecimal  [32-Bits]
+
+Area                                    Addr        Size        Decimal Bytes (Attributes)
+--------------------------------        ----        ----        ------- ----- ------------
+REG_BANK_0                          00000000    00000008 =           8. bytes (REL,OVR)
+
+      Value  Global                              Global Defined In Module
+      -----  --------------------------------   ------------------------
+ASxxxx Linker V03.00/V05.40 + sdld,  page 6.
+Hexadecimal  [32-Bits]
+
+Area                                    Addr        Size        Decimal Bytes (Attributes)
+--------------------------------        ----        ----        ------- ----- ------------
+DSEG                                00000000    00000008 =           8. bytes (REL,CON)
+
+      Value  Global                              Global Defined In Module
+      -----  --------------------------------   ------------------------
+ASxxxx Linker V03.00/V05.40 + sdld,  page 7.
+Hexadecimal  [32-Bits]
+
+Area                                    Addr        Size        Decimal Bytes (Attributes)
+--------------------------------        ----        ----        ------- ----- ------------
+XSEG                                0000DEF2    0000002E =          46. bytes (REL,CON,XDATA)
+
+      Value  Global                              Global Defined In Module
+      -----  --------------------------------   ------------------------
+ASxxxx Linker V03.00/V05.40 + sdld,  page 8.
+Hexadecimal  [32-Bits]
+
+Area                                    Addr        Size        Decimal Bytes (Attributes)
+--------------------------------        ----        ----        ------- ----- ------------
+CSEG                                00005010    00000EDD =        3805. bytes (REL,CON,CODE)
+
+      Value  Global                              Global Defined In Module
+      -----  --------------------------------   ------------------------
+C:   00005010  _BankProjectileInit                projectile_engine
+C:   000050FF  _BankProjectileSpawn               projectile_engine
+C:   00005768  _BankProjectileTick                projectile_engine
+ASxxxx Linker V03.00/V05.40 + sdld,  page 9.
+
+Files Linked                              [ module(s) ]
+
+/workspace/scratch/8f0cb3cb5292/awto-ddc/tmp/doom-projectiles/projectile_entry.rel
+                                          [  ]
+/workspace/scratch/8f0cb3cb5292/awto-ddc/tmp/doom-projectiles/projectile_engine.rel
+                                          [  ]
+
+ASxxxx Linker V03.00/V05.40 + sdld,  page 10.
+
+User Base Address Definitions
+
+CSEG=0x5010
+CONST=0x7000
+XSEG=0xDEF2
+ASxxxx Linker V03.00/V05.40 + sdld,  page 11.
+
+User Global Definitions
+
+_actor_count=0xDBFF
+_PlayerDamage=0xA072
+bp=0xA
+__gptrput=0xE1E6
+__mulint=0xEBFF
+_DdrPointer=0xAD88
+_MotionVisible=0xC776
+_actor_things=0xDBFC
+_FixedDiv=0xE14C
+_motion_state=0xF6A0
+__gptrget=0xE176
+
+

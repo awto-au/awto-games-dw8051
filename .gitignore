@@ -1,0 +1,17 @@
+tmp/
+__pycache__/
+.pytest_cache/
+
+# Asteroids ROM set and anything derived from it: never committed (docs/games/asteroids.md)
+asteroid.zip
+asteroids*.zip
+*.np3
+*.ef2
+*.h2
+*.j2
+*.c8
+**/asteroids/
+**/asteroids_shapes*
+**/asteroids_rom*
+fw/games/asteroids_data.inc
+local/

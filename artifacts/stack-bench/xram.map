@@ -1,0 +1,82 @@
+ASxxxx Linker V03.00/V05.40 + sdld,  page 1.
+Hexadecimal  [32-Bits]
+
+Area                                    Addr        Size        Decimal Bytes (Attributes)
+--------------------------------        ----        ----        ------- ----- ------------
+.  .ABS.                            00000000    00000000 =           0. bytes (ABS,CON)
+
+      Value  Global                              Global Defined In Module
+      -----  --------------------------------   ------------------------
+     00000000  .__.ABS.                           stackbench
+     00000000  l_BIT_BANK                      
+     00000000  l_BSEG                          
+     00000000  l_BSEG_BYTES                    
+     00000000  l_ISEG                          
+     00000000  l_OSEG                          
+     00000000  l_REG_BANK_1                    
+     00000000  l_REG_BANK_2                    
+     00000000  l_REG_BANK_3                    
+     00000000  l_SSEG                          
+     00000000  l__CODE                         
+     00000000  s_BSEG                          
+     00000000  s_DSEG                          
+     00000000  s_REG_BANK_0                    
+     00000008  l_REG_BANK_0                    
+     00000008  s_REG_BANK_1                    
+     0000000B  l_DSEG                          
+     00000010  s_REG_BANK_2                    
+     00000018  s_BIT_BANK                      
+     00000018  s_REG_BANK_3                    
+     00000020  s_BSEG_BYTES                    
+     00000020  s__CODE                         
+     00000030  s_ISEG                          
+     00000030  s_OSEG                          
+     00000030  s_SSEG                          
+     0000005B  l_CSEG                          
+     00000100  l_IRAM                          
+     00000100  s_CSEG                          
+
+ASxxxx Linker V03.00/V05.40 + sdld,  page 2.
+Hexadecimal  [32-Bits]
+
+Area                                    Addr        Size        Decimal Bytes (Attributes)
+--------------------------------        ----        ----        ------- ----- ------------
+REG_BANK_0                          00000000    00000008 =           8. bytes (REL,OVR)
+
+      Value  Global                              Global Defined In Module
+      -----  --------------------------------   ------------------------
+ASxxxx Linker V03.00/V05.40 + sdld,  page 3.
+Hexadecimal  [32-Bits]
+
+Area                                    Addr        Size        Decimal Bytes (Attributes)
+--------------------------------        ----        ----        ------- ----- ------------
+DSEG                                00000000    0000000B =          11. bytes (REL,CON)
+
+      Value  Global                              Global Defined In Module
+      -----  --------------------------------   ------------------------
+ASxxxx Linker V03.00/V05.40 + sdld,  page 4.
+Hexadecimal  [32-Bits]
+
+Area                                    Addr        Size        Decimal Bytes (Attributes)
+--------------------------------        ----        ----        ------- ----- ------------
+CSEG                                00000100    0000005B =          91. bytes (REL,CON,CODE)
+
+      Value  Global                              Global Defined In Module
+      -----  --------------------------------   ------------------------
+C:   00000100  _foo                               stackbench
+
+ASxxxx Linker V03.00/V05.40 + sdld,  page 5.
+
+Files Linked                              [ module(s) ]
+
+/workspace/scratch/8f0cb3cb5292/doom-port-build/xram.rel
+                                          [  ]
+
+ASxxxx Linker V03.00/V05.40 + sdld,  page 6.
+
+User Base Address Definitions
+
+CSEG=0x100
+DSEG=0x30
+
+

@@ -1,0 +1,12 @@
+=== fastcore_check timing None; sim CPU model dw8051
+timing: 297 opcode / stretch cases checked
+timing: Timer2 T2M=0: 1200 clk -> 100 counts (clk/12)
+timing: Timer2 T2M=1: 1200 clk -> 300 counts (clk/4)
+timing: dual DPTR checked
+timing: f_cpu reset: crystal / 2: 7.159 MHz (crystal)
+timing: f_cpu ScalerMcuFlashClockGroupSetting(_EXT_XTAL_CLK): 14.318 MHz (crystal)
+timing: f_cpu M2PLL 351 MHz, flash div 4: 87.699 MHz (M2PLL)
+timing: f_cpu M2PLL M 300 via 0x01E7[5:4] (M[9:8]): 2147.727 MHz (M2PLL)
+timing: f_cpu M2PLL N 19 via 0x01E7[3:0] (N[7:4] = 1): 51.244 MHz (M2PLL)
+timing: f_cpu power saving: IOSC, div 1: 28.000 MHz (iosc)
+PASS fastcore_check timing: 0 failed

@@ -1,0 +1,26 @@
+{
+  "internal_stretch0": {
+    "cpu_clocks": 172,
+    "instructions": 28,
+    "result": "0x12243648",
+    "us_at_350791000": 0.49032044721785906
+  },
+  "xram_stretch0": {
+    "cpu_clocks": 400,
+    "instructions": 64,
+    "result": "0x12243648",
+    "us_at_350791000": 1.1402801098089745
+  },
+  "internal_stretch1": {
+    "cpu_clocks": 172,
+    "instructions": 28,
+    "result": "0x12243648",
+    "us_at_350791000": 0.49032044721785906
+  },
+  "xram_stretch1": {
+    "cpu_clocks": 424,
+    "instructions": 64,
+    "result": "0x12243648",
+    "us_at_350791000": 1.208696916397513
+  }
+}

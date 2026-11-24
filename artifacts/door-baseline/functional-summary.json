@@ -1,0 +1,52 @@
+{
+  "frames": 310,
+  "ticks": 434,
+  "doors": {
+    "count": 4,
+    "fault": 0,
+    "last_used": 1,
+    "reopens": 1,
+    "activations": 1,
+    "updates": 80,
+    "states": [
+      {
+        "height": 0,
+        "wait": 0,
+        "phase": 0,
+        "stay": 0,
+        "reserved": 0
+      },
+      {
+        "height": -24,
+        "wait": 0,
+        "phase": 0,
+        "stay": 0,
+        "reserved": 0
+      },
+      {
+        "height": -24,
+        "wait": 0,
+        "phase": 0,
+        "stay": 0,
+        "reserved": 0
+      },
+      {
+        "height": -24,
+        "wait": 0,
+        "phase": 0,
+        "stay": 0,
+        "reserved": 0
+      }
+    ]
+  },
+  "all_world_profiles_verified": true,
+  "all_player_poses_verified": true,
+  "doorway_scene_indices": [
+    72,
+    72,
+    72
+  ],
+  "tests_passed": 119,
+  "priority": "functionality; no minimum FPS",
+  "old_renderer_fps_invalidated": true
+}

@@ -1,0 +1,1 @@
+{'frames': 130, 'stack_high': 219, 'max_ms': 292.4094973930346, 'duration_s': 24.427478846378612, 'combat': {'health': 80, 'ammo': 41, 'shots': 9, 'hits': 2, 'kills': 2, 'damage': 20, 'attacks': 2, 'dead': 0, 'wait': 0, 'flash': 0, 'hurt': 0, 'spare': 0, 'target': 0, 'verified': True}, 'actorstats': {'ticks': 182, 'moves': 34, 'blocked': 2, 'awake': 0}}

@@ -1,0 +1,114 @@
+{
+  "cpu_hz": 350791000,
+  "math": {
+    "_DoomFixedMul": {
+      "vectors": 225309,
+      "failures": 0,
+      "min_clk": 104,
+      "median_clk": 1256,
+      "max_clk": 4240,
+      "median_us": 3.58047954480018,
+      "paths": {
+        "integral": {
+          "n": 50126,
+          "median_clk": 660.0,
+          "median_us": 1.881462181184808
+        },
+        "fractional": {
+          "n": 175183,
+          "median_clk": 1256,
+          "median_us": 3.58047954480018
+        }
+      }
+    },
+    "_DoomFixedDiv": {
+      "vectors": 225309,
+      "failures": 0,
+      "min_clk": 460,
+      "median_clk": 5396,
+      "max_clk": 9468,
+      "median_us": 15.382378681323067,
+      "paths": {
+        "div32": {
+          "n": 174899,
+          "median_clk": 5468,
+          "median_us": 15.587629101088682
+        },
+        "saturated": {
+          "n": 137,
+          "median_clk": 544,
+          "median_us": 1.5507809493402054
+        },
+        "div16": {
+          "n": 25231,
+          "median_clk": 5584,
+          "median_us": 15.918310332933284
+        },
+        "div8": {
+          "n": 25042,
+          "median_clk": 4312.0,
+          "median_us": 12.292219583740746
+        }
+      }
+    }
+  },
+  "ddr_clean": {
+    "status": [
+      165,
+      2,
+      2,
+      2,
+      0,
+      1,
+      0
+    ],
+    "instructions": 3800000,
+    "cpu_clk": 25813220,
+    "stack_high": 154,
+    "stack_wraps": 0,
+    "ddr": {
+      "writes": 1605,
+      "reads": 512,
+      "invalid": 0,
+      "hazards": 0,
+      "dropped": 0
+    },
+    "host_seconds": 0.143,
+    "capture": "ddr-figure.png"
+  },
+  "ddr_retry": {
+    "status": [
+      165,
+      2,
+      2,
+      2,
+      0,
+      1,
+      1
+    ],
+    "instructions": 4300000,
+    "cpu_clk": 30100980,
+    "stack_high": 154,
+    "stack_wraps": 0,
+    "ddr": {
+      "writes": 1605,
+      "reads": 597,
+      "invalid": 0,
+      "hazards": 0,
+      "dropped": 85
+    },
+    "host_seconds": 0.08,
+    "capture": "ddr-retry.png"
+  },
+  "scope": "Native 8051 math + actual DDR draw/verify firmware; not a full Doom engine. Transport latency ideal; not hardware FPS.",
+  "vlc": {
+    "jpeg_bytes": 11258,
+    "video": "vlc-capture.mp4",
+    "validated": true
+  },
+  "validation": {
+    "targeted_pytest_passed": 70,
+    "dw8051_opcode_stretch_cases": 297,
+    "timers_dual_dptr_clock_check": "PASS"
+  }
+}

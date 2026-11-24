@@ -1,0 +1,43 @@
+{
+  "frames": 40,
+  "doors": {
+    "count": 4,
+    "fault": 0,
+    "last_used": 1,
+    "reopens": 0,
+    "activations": 1,
+    "updates": 34,
+    "states": [
+      {
+        "height": 68,
+        "wait": 130,
+        "phase": 2,
+        "stay": 0,
+        "reserved": 0
+      },
+      {
+        "height": -24,
+        "wait": 0,
+        "phase": 0,
+        "stay": 0,
+        "reserved": 0
+      },
+      {
+        "height": -24,
+        "wait": 0,
+        "phase": 0,
+        "stay": 0,
+        "reserved": 0
+      },
+      {
+        "height": -24,
+        "wait": 0,
+        "phase": 0,
+        "stay": 0,
+        "reserved": 0
+      }
+    ]
+  },
+  "tables_embedded": true,
+  "mjpeg_ffmpeg_verified": true
+}
