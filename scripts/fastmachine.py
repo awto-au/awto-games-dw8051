@@ -34,6 +34,8 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 CPU_MODES = ("dw8051", "8052")
 MODEL_JSON = HERE / "dw8051_model.json"
+if not MODEL_JSON.exists():   # timing tables live in awto-ddc: $AWTO_DDC_SCRIPTS
+    MODEL_JSON = Path(os.environ.get("AWTO_DDC_SCRIPTS", "/mnt/2tb/git/awto-ddc/scripts")) / "dw8051_model.json"
 
 
 def cpu_mode() -> str:

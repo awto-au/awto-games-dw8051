@@ -1,0 +1,29 @@
+{
+ "map": "E1M1",
+ "demo": "examples/doom-fireballs-demo.json",
+ "frames": 127,
+ "wall_s": 17.08,
+ "wall_ms_per_frame": 134.5,
+ "model_movie_s": 63.78,
+ "model_ms_worst": 708.61,
+ "model_ms_mean": 502.18,
+ "speed_vs_model": 3.735,
+ "final_combat": {
+  "health": 90,
+  "ammo": 42,
+  "shots": 8,
+  "hits": 3,
+  "kills": 1,
+  "damage": 10,
+  "attacks": 2,
+  "dead": 0,
+  "wait": 1,
+  "flash": 0,
+  "hurt": 0,
+  "spare": 0,
+  "target": 0,
+  "verified": true
+ },
+ "mp4": "previews/doom-fastsim-e1m1-20261125.mp4",
+ "mp4_bytes": 403637
+}

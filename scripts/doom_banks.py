@@ -32,7 +32,7 @@ ljmp _BankPickupTick
 '''
     (out/'projectile_entry.asm').write_text(entry)
     R.run([sdcc.parent/'sdas8051','-losg',out/'projectile_entry.rel',out/'projectile_entry.asm'])
-    lines=['-muwx','-i '+str(out/'projectile_engine.ihx'),'-b CSEG=0x5010','-b CONST=0x7000','-b XSEG=0x%X'%xbase]
+    lines=['-muwx','-i '+str(out/'projectile_engine.ihx'),'-a CSEG=0x5010','-a CONST=0x7000','-a XSEG=0x%X'%xbase]
     imports={}
     for n in re.findall(r'^S (\S+) Ref',rel,re.M):
         if n=='.__.ABS.':continue
@@ -82,7 +82,7 @@ ljmp _BankDrawPlane
     (out/'graphics_entry.asm').write_text(entry)
     R.run([sdcc.parent/'sdas8051','-losg',out/'graphics_entry.rel',out/'graphics_entry.asm'])
     main=symbols(out/'doom_renderer.map');imports={}
-    lines=['-muwx','-i '+str(out/'graphics_engine.ihx'),'-b CSEG=0x5010','-b CONST=0x7000','-b XSEG=0x%X'%xbase]
+    lines=['-muwx','-i '+str(out/'graphics_engine.ihx'),'-a CSEG=0x5010','-a CONST=0x7000','-a XSEG=0x%X'%xbase]
     for n in re.findall(r'^S (\S+) Ref',rel,re.M):
         if n=='.__.ABS.':continue
         if n not in main:raise ValueError('graphics export missing: '+n)

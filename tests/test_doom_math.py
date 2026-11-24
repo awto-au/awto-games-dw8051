@@ -24,7 +24,7 @@ def test_arithmetic_on_dw8051(tmp_path):
     sdcc = Path(sdcc)
     # Only the assembler/linker is needed for the arithmetic image.
     doom_sim.command([sdcc.parent / "sdas8051", "-losg", tmp_path / "fixed_math.rel", ROOT / "fw/doom/fixed_math.asm"])
-    doom_sim.command([sdcc.parent / "sdld", "-n", "-i", "-m", "-w", "-b", "CSEG=0x0100", "-b", "DSEG=0x30",
+    doom_sim.command([sdcc.parent / "sdld", "-n", "-i", "-m", "-w", "-a", "CSEG=0x0100", "-a", "DSEG=0x30",
                       tmp_path / "fixed_math", tmp_path / "fixed_math.rel"])
     result = doom_sim.math_check(tmp_path, 1000)
     assert all(x["failures"] == 0 for x in result.values())

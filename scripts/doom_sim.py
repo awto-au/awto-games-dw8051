@@ -57,7 +57,7 @@ def command(argv):
 def build(sdcc, libdir, out):
     bindir = sdcc.parent
     command([bindir / "sdas8051", "-losg", out / "fixed_math.rel", ROOT / "fw/doom/fixed_math.asm"])
-    command([bindir / "sdld", "-n", "-i", "-m", "-w", "-b", "CSEG=0x0100", "-b", "DSEG=0x30", out / "fixed_math", out / "fixed_math.rel"])
+    command([bindir / "sdld", "-n", "-i", "-m", "-w", "-a", "CSEG=0x0100", "-a", "DSEG=0x30", out / "fixed_math", out / "fixed_math.rel"])
     command([sdcc, "-mmcs51", "--model-large", "--stack-auto", "--opt-code-speed", "--xram-loc", "0xD700", "--xram-size", "0x1E00",
              "--iram-size", "256", "--lib-path", libdir, ROOT / "tests/ddr_sim_fw.c", "-o", out / "ddr_sim_fw.ihx"])
 

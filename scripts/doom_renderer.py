@@ -8,6 +8,7 @@ This is renderer/controller bring-up with native combat, fireballs and pickups, 
 from __future__ import annotations
 import argparse
 import json
+import os
 import re
 import struct
 import subprocess
@@ -78,7 +79,9 @@ def cache_config(out, overrides=None):
     for name,reg in {"WRITE_BASE":"DATABUF_W_00", "READ_BASE":"DATABUF_R_00", "CMD":"CMD", "LEN":"LEN",
                      "ADDR_H":"ADDR_H", "READ_FLAG":"READ_FLAG", "MASK_H":"WMASK_H"}.items():
         values["DOOM_MCU_DC_"+name] = regs["MCU_DC_"+reg+"_A"]
-    sdk = (ROOT/"fw/sdk/Project/Header/AwtoRegs.h").read_text()
+    sdk_rel = "fw/sdk/Project/Header/AwtoRegs.h"   # SDK header stays in awto-ddc ($AWTO_DDC_REPO), not vendored here
+    sdk_path = next((p for p in (ROOT/sdk_rel, Path(os.environ.get("AWTO_DDC_REPO", "/mnt/2tb/git/awto-ddc"))/sdk_rel) if p.exists()), ROOT/sdk_rel)
+    sdk = sdk_path.read_text()
     values["DOOM_MCU_DC_CMD_MASK"] = int(re.search(r"#define\s+AWTO_F_MCU_DC_CMD_A_DDR_A_CMD\s+(0x[0-9A-Fa-f]+)",sdk).group(1),0)
     values.update(overrides or {})
     # Presentation writes complete 16-pixel tiles, including right-edge padding.
