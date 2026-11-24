@@ -1,0 +1,546 @@
+ASxxxx Linker V03.00/V05.40 + sdld,  page 1.
+Hexadecimal  [32-Bits]
+
+Area                                    Addr        Size        Decimal Bytes (Attributes)
+--------------------------------        ----        ----        ------- ----- ------------
+CABS1                               00000000    00000004 =           4. bytes (ABS,CON,CODE)
+
+      Value  Global                              Global Defined In Module
+      -----  --------------------------------   ------------------------
+C:   00000000  l_BSEG                          
+C:   00000000  l_BSEG_BYTES                    
+C:   00000000  l_CABS                          
+C:   00000000  l_GSINIT                        
+C:   00000000  l_GSINIT1                       
+C:   00000000  l_GSINIT5                       
+C:   00000000  l_IABS                          
+C:   00000000  l_ISEG                          
+C:   00000000  l_PSEG                          
+C:   00000000  l_REG_BANK_1                    
+C:   00000000  l_REG_BANK_2                    
+C:   00000000  l_REG_BANK_3                    
+C:   00000000  l_RSEG                          
+C:   00000000  l_RSEG0                         
+C:   00000000  l_RSEG1                         
+C:   00000000  l_XABS                          
+C:   00000000  l__CODE                         
+C:   00000000  s_BSEG                          
+C:   00000000  s_CABS                          
+C:   00000000  s_CABS0                         
+C:   00000000  s_CABS1                         
+C:   00000000  s_CABS2                         
+C:   00000000  s_CABS3                         
+C:   00000000  s_DSEG                          
+C:   00000000  s_HOME                          
+C:   00000000  s_IABS                          
+C:   00000000  s_ISEG                          
+C:   00000000  s_REG_BANK_0                    
+C:   00000000  s_RSEG                          
+C:   00000000  s_RSEG0                         
+C:   00000000  s_RSEG1                         
+C:   00000000  s_XABS                          
+C:   00000001  l_BIT_BANK                      
+C:   00000003  l_GSFINAL                       
+C:   00000003  l_GSINIT0                       
+C:   00000004  l_CABS0                         
+C:   00000004  l_CABS1                         
+C:   00000007  l_CABS3                         
+C:   00000008  l_REG_BANK_0                    
+C:   00000008  s_REG_BANK_1                    
+C:   0000000A  l_GSINIT2                       
+C:   0000000C  s_OSEG                          
+C:   0000000F  l_OSEG                          
+C:   00000010  s_REG_BANK_2                    
+C:   00000018  s_REG_BANK_3                    
+C:   00000020  s_BIT_BANK                      
+C:   00000020  s_BSEG_BYTES                    
+C:   00000020  s__CODE                         
+C:   00000021  s_SSEG                          
+C:   00000022  l_GSINIT3                       
+ASxxxx Linker V03.00/V05.40 + sdld,  page 2.
+Hexadecimal  [32-Bits]
+
+Area                                    Addr        Size        Decimal Bytes (Attributes)
+--------------------------------        ----        ----        ------- ----- ------------
+CABS1                               00000000    00000004 =           4. bytes (ABS,CON,CODE)
+
+      Value  Global                              Global Defined In Module
+      -----  --------------------------------   ------------------------
+C:   0000002A  l_GSINIT4                       
+C:   00000052  l_CABS2                         
+C:   0000007B  l_DSEG                          
+C:   000000AE  l_HOME                          
+C:   000000AE  s_GSINIT0                       
+C:   000000B1  s_GSINIT1                       
+C:   000000B1  s_GSINIT2                       
+C:   000000BB  s_GSINIT3                       
+C:   000000D2  l_CONST                         
+C:   000000DD  s_GSINIT4                       
+C:   000000DF  l_SSEG                          
+C:   000000F8  l_XINIT                         
+C:   000000F8  l_XISEG                         
+C:   00000100  l_IRAM                          
+C:   00000107  s_GSFINAL                       
+C:   00000107  s_GSINIT                        
+C:   00000107  s_GSINIT5                       
+C:   0000010A  s_CSEG                          
+C:   00000700  l_XSEG                          
+C:   0000D700  s_PSEG                          
+C:   0000D700  s_XSEG                          
+C:   0000DE00  s_XISEG                         
+C:   0000F490  l_CSEG                          
+C:   0000F59A  s_CONST                         
+C:   0000F66C  s_XINIT                         
+ASxxxx Linker V03.00/V05.40 + sdld,  page 3.
+Hexadecimal  [32-Bits]
+
+Area                                    Addr        Size        Decimal Bytes (Attributes)
+--------------------------------        ----        ----        ------- ----- ------------
+CABS0                               00000000    00000004 =           4. bytes (ABS,CON,CODE)
+
+      Value  Global                              Global Defined In Module
+      -----  --------------------------------   ------------------------
+ASxxxx Linker V03.00/V05.40 + sdld,  page 4.
+Hexadecimal  [32-Bits]
+
+Area                                    Addr        Size        Decimal Bytes (Attributes)
+--------------------------------        ----        ----        ------- ----- ------------
+CABS3                               00000000    00000007 =           7. bytes (ABS,CON,CODE)
+
+      Value  Global                              Global Defined In Module
+      -----  --------------------------------   ------------------------
+C:   0000FF90  _combat_schema                     renderer
+C:   0000FFF0  _renderer_format                   renderer_port
+
+ASxxxx Linker V03.00/V05.40 + sdld,  page 5.
+Hexadecimal  [32-Bits]
+
+Area                                    Addr        Size        Decimal Bytes (Attributes)
+--------------------------------        ----        ----        ------- ----- ------------
+CABS2                               00000000    00000052 =          82. bytes (ABS,CON,CODE)
+
+      Value  Global                              Global Defined In Module
+      -----  --------------------------------   ------------------------
+C:   0000FF00  _renderer_schema                   renderer_port
+C:   0000FF80  _sprite_schema                     renderer
+
+ASxxxx Linker V03.00/V05.40 + sdld,  page 6.
+Hexadecimal  [32-Bits]
+
+Area                                    Addr        Size        Decimal Bytes (Attributes)
+--------------------------------        ----        ----        ------- ----- ------------
+.  .ABS.                            00000000    00000000 =           0. bytes (ABS,CON)
+
+      Value  Global                              Global Defined In Module
+      -----  --------------------------------   ------------------------
+     00000000  .__.ABS.                           _startup
+     0000008E  _doom_ckcon                        renderer_port
+     00000092  __XPAGE                            doom_video
+     0000E000  _ddr_cache_data                    ddr_cache
+     0000E800  _ddr_cache_offsets                 ddr_cache
+     0000E900  _ddr_cache_banks                   ddr_cache
+     0000ED00  _ddr_burst_buffer                  ddr_cache
+     0000F000  _doom_frame_bitmap                 ddr_cache
+     0000F200  _door_states                       doors
+     0000F600  _renderer_status                   renderer_port
+     0000F610  _motion_input                      motion
+     0000F630  _renderer_frames                   renderer_port
+     0000F631  _renderer_ack                      renderer_port
+     0000F632  _renderer_frames_hi                renderer_port
+     0000F634  _renderer_angle_step               renderer_port
+     0000F640  _renderer_boot                     renderer_port
+     0000F6A0  _motion_state                      motion
+     0000F6C0  _door_info                         doors
+     0000F6D0  _sprite_info                       renderer
+     0000F6E0  _actor_info                        renderer
+     0000F700  _combat                            renderer
+     0000F71E  _combat_hud                        renderer
+     0000F740  _pickup_info                       renderer
+     0000F748  _key_info                          doors
+ASxxxx Linker V03.00/V05.40 + sdld,  page 7.
+Hexadecimal  [32-Bits]
+
+Area                                    Addr        Size        Decimal Bytes (Attributes)
+--------------------------------        ----        ----        ------- ----- ------------
+REG_BANK_0                          00000000    00000008 =           8. bytes (REL,OVR)
+
+      Value  Global                              Global Defined In Module
+      -----  --------------------------------   ------------------------
+ASxxxx Linker V03.00/V05.40 + sdld,  page 8.
+Hexadecimal  [32-Bits]
+
+Area                                    Addr        Size        Decimal Bytes (Attributes)
+--------------------------------        ----        ----        ------- ----- ------------
+BIT_BANK                            00000020    00000001 =           1. bytes (REL,OVR)
+
+      Value  Global                              Global Defined In Module
+      -----  --------------------------------   ------------------------
+ASxxxx Linker V03.00/V05.40 + sdld,  page 9.
+Hexadecimal  [32-Bits]
+
+Area                                    Addr        Size        Decimal Bytes (Attributes)
+--------------------------------        ----        ----        ------- ----- ------------
+DSEG                                00000000    0000007B =         123. bytes (REL,CON)
+
+      Value  Global                              Global Defined In Module
+      -----  --------------------------------   ------------------------
+     0000000A  bp                                 
+     0000000B  _bp                                _bp
+
+ASxxxx Linker V03.00/V05.40 + sdld,  page 10.
+Hexadecimal  [32-Bits]
+
+Area                                    Addr        Size        Decimal Bytes (Attributes)
+--------------------------------        ----        ----        ------- ----- ------------
+OSEG                                0000000C    0000000F =          15. bytes (REL,OVR)
+
+      Value  Global                              Global Defined In Module
+      -----  --------------------------------   ------------------------
+ASxxxx Linker V03.00/V05.40 + sdld,  page 11.
+Hexadecimal  [32-Bits]
+
+Area                                    Addr        Size        Decimal Bytes (Attributes)
+--------------------------------        ----        ----        ------- ----- ------------
+SSEG                                00000021    000000DF =         223. bytes (REL,OVR)
+
+      Value  Global                              Global Defined In Module
+      -----  --------------------------------   ------------------------
+     00000021  __start__stack                     renderer_port
+
+ASxxxx Linker V03.00/V05.40 + sdld,  page 12.
+Hexadecimal  [32-Bits]
+
+Area                                    Addr        Size        Decimal Bytes (Attributes)
+--------------------------------        ----        ----        ------- ----- ------------
+XSEG                                0000D700    00000700 =        1792. bytes (REL,CON,XDATA)
+
+      Value  Global                              Global Defined In Module
+      -----  --------------------------------   ------------------------
+D:   0000D700  __g_segs                           renderer_port
+D:   0000D703  __g_numsectors                     renderer_port
+D:   0000D705  __g_numlines                       renderer_port
+D:   0000D707  __g_sectors                        renderer_port
+D:   0000D70A  __g_subsectors                     renderer_port
+D:   0000D70D  __g_lines                          renderer_port
+D:   0000D710  __g_sides                          renderer_port
+D:   0000D713  __g_gamma                          renderer_port
+D:   0000D715  __g_player                         renderer_port
+D:   0000D814  _doom_column_target                renderer_port
+D:   0000D816  _doom_column_frac                  renderer_port
+D:   0000D818  _doom_column_step                  renderer_port
+D:   0000D81A  _doom_column_count                 renderer_port
+D:   0000D91C  _numnodes                          renderer
+D:   0000D91E  _nodes                             renderer
+D:   0000D935  _viewangle                         renderer
+D:   0000D9C2  _fullcolormap                      renderer
+D:   0000D9C5  _fixedcolormap                     renderer
+D:   0000D9E1  _textureheight                     renderer
+D:   0000D9E4  _texturetranslation                renderer
+D:   0000DBFC  _actor_things                      renderer
+D:   0000DBFF  _actor_count                       renderer
+D:   0000DC81  _doom_frame_active                 ddr_cache
+D:   0000DC82  _ddr_fault                         ddr_cache
+D:   0000DC83  _doom_draw_address                 ddr_cache
+D:   0000DC87  _doom_draw_count                   ddr_cache
+D:   0000DC88  _doom_draw_color                   ddr_cache
+D:   0000DC89  _ddr_hits                          ddr_cache
+D:   0000DC8D  _ddr_misses                        ddr_cache
+D:   0000DC91  _doom_burst_source                 ddr_cache
+D:   0000DC93  _doom_colormap_address             ddr_cache
+D:   0000DC97  _doom_texture_address              ddr_cache
+D:   0000DCBF  _motion_actor_floor                motion
+ASxxxx Linker V03.00/V05.40 + sdld,  page 13.
+Hexadecimal  [32-Bits]
+
+Area                                    Addr        Size        Decimal Bytes (Attributes)
+--------------------------------        ----        ----        ------- ----- ------------
+XISEG                               0000DE00    000000F8 =         248. bytes (REL,CON,XDATA)
+
+      Value  Global                              Global Defined In Module
+      -----  --------------------------------   ------------------------
+D:   0000DE00  __g_gametic                        renderer_port
+D:   0000DE04  _skyflatnum                        renderer_port
+D:   0000DEF6  _validcount                        renderer
+ASxxxx Linker V03.00/V05.40 + sdld,  page 14.
+Hexadecimal  [32-Bits]
+
+Area                                    Addr        Size        Decimal Bytes (Attributes)
+--------------------------------        ----        ----        ------- ----- ------------
+HOME                                00000000    000000AE =         174. bytes (REL,CON,CODE)
+
+      Value  Global                              Global Defined In Module
+      -----  --------------------------------   ------------------------
+C:   00000008  sdcc_atomic_compare_exchange_gpt   renderer_port
+C:   00000010  sdcc_atomic_exchange_rollback_st   renderer_port
+C:   00000036  sdcc_atomic_exchange_rollback_en   renderer_port
+C:   00000039  _atomic_flag_test_and_set          renderer_port
+C:   0000003B  sdcc_atomic_exchange_gptr_impl     renderer_port
+C:   00000048  __sdcc_program_startup             renderer_port
+C:   0000004D  sdcc_gptr_cmp                      
+C:   00000080  ___gptr_cmp                        
+
+ASxxxx Linker V03.00/V05.40 + sdld,  page 15.
+Hexadecimal  [32-Bits]
+
+Area                                    Addr        Size        Decimal Bytes (Attributes)
+--------------------------------        ----        ----        ------- ----- ------------
+GSINIT0                             000000AE    00000003 =           3. bytes (REL,CON,CODE)
+
+      Value  Global                              Global Defined In Module
+      -----  --------------------------------   ------------------------
+C:   000000AE  __sdcc_gsinit_startup              
+
+ASxxxx Linker V03.00/V05.40 + sdld,  page 16.
+Hexadecimal  [32-Bits]
+
+Area                                    Addr        Size        Decimal Bytes (Attributes)
+--------------------------------        ----        ----        ------- ----- ------------
+GSINIT2                             000000B1    0000000A =          10. bytes (REL,CON,CODE)
+
+      Value  Global                              Global Defined In Module
+      -----  --------------------------------   ------------------------
+ASxxxx Linker V03.00/V05.40 + sdld,  page 17.
+Hexadecimal  [32-Bits]
+
+Area                                    Addr        Size        Decimal Bytes (Attributes)
+--------------------------------        ----        ----        ------- ----- ------------
+GSINIT3                             000000BB    00000022 =          34. bytes (REL,CON,CODE)
+
+      Value  Global                              Global Defined In Module
+      -----  --------------------------------   ------------------------
+C:   000000BB  __mcs51_genXINIT                   
+
+ASxxxx Linker V03.00/V05.40 + sdld,  page 18.
+Hexadecimal  [32-Bits]
+
+Area                                    Addr        Size        Decimal Bytes (Attributes)
+--------------------------------        ----        ----        ------- ----- ------------
+GSINIT4                             000000DD    0000002A =          42. bytes (REL,CON,CODE)
+
+      Value  Global                              Global Defined In Module
+      -----  --------------------------------   ------------------------
+C:   000000DD  __mcs51_genRAMCLEAR                
+C:   000000E3  __mcs51_genXRAMCLEAR               
+
+ASxxxx Linker V03.00/V05.40 + sdld,  page 19.
+Hexadecimal  [32-Bits]
+
+Area                                    Addr        Size        Decimal Bytes (Attributes)
+--------------------------------        ----        ----        ------- ----- ------------
+GSFINAL                             00000107    00000003 =           3. bytes (REL,CON,CODE)
+
+      Value  Global                              Global Defined In Module
+      -----  --------------------------------   ------------------------
+ASxxxx Linker V03.00/V05.40 + sdld,  page 20.
+Hexadecimal  [32-Bits]
+
+Area                                    Addr        Size        Decimal Bytes (Attributes)
+--------------------------------        ----        ----        ------- ----- ------------
+CSEG                                0000010A    0000F490 =       62608. bytes (REL,CON,CODE)
+
+      Value  Global                              Global Defined In Module
+      -----  --------------------------------   ------------------------
+C:   0000010A  _R_GetTexture                      renderer_port
+C:   000001AB  _R_PlatformTexture                 renderer_port
+C:   000002E4  _R_DrawColumnWall                  renderer_port
+C:   000004F4  _R_DrawColumnFlat                  renderer_port
+C:   0000061A  _R_GetPlaneColor                   renderer_port
+C:   00000663  _R_LoadSkyPatch                    renderer_port
+C:   00000664  _R_FreeSkyPatch                    renderer_port
+C:   00000665  _R_DrawSky                         renderer_port
+C:   0000067E  _MotionSectorAt                    renderer_port
+C:   0000077A  _DoorSectorCeiling                 renderer_port
+C:   000007D4  _DoorSetCeiling                    renderer_port
+C:   00000859  _main                              renderer_port
+C:   00000F27  _FixedMulAngle                     renderer
+C:   00000F68  _FixedMul3216                      renderer
+C:   00000FB4  _FixedApproxDiv                    renderer
+C:   0000132D  _R_PointInSubsector                renderer
+C:   00001BFB  _R_LoadColorMap                    renderer
+C:   00006424  _R_RenderPlayerView                renderer
+C:   000086C4  _R_ActorInit                       renderer
+C:   00008AC2  _R_ActorFrame                      renderer
+C:   00009737  _R_CombatInit                      renderer
+C:   00009789  _R_PlayerAlive                     renderer
+C:   0000A087  _PlayerDamage                      renderer
+C:   0000AA81  _R_DrawCombatHUD                   renderer
+C:   0000ACDB  _R_PlatformInit                    renderer
+C:   0000AD99  _finesineapprox                    trig
+C:   0000AE3D  _finecosineapprox                  trig
+C:   0000AE4F  _DdrInit                           ddr_cache
+C:   0000AE99  _DdrFlush                          ddr_cache
+C:   0000AEAE  _DdrWriteBurst                     ddr_cache
+C:   0000AEC8  _DdrPointer                        ddr_cache
+C:   0000AF1C  _MotionSetThingsBlock              motion
+C:   0000AF28  _MotionInit                        motion
+C:   0000B0AB  _MotionWorldChanged                motion
+C:   0000B0B2  _MotionRefreshLine                 motion
+C:   0000B4C5  _MotionTraceUse                    motion
+C:   0000C830  _MotionActorMove                   motion
+C:   0000C8B6  _MotionVisible                     motion
+C:   0000D557  _MotionFrame                       motion
+C:   0000D5AA  _DoorSetThingsBlock                doors
+C:   0000D6FE  _DoorInit                          doors
+C:   0000DA1B  _DoorTick                          doors
+C:   0000DFAD  _ProjectileInit                    projectile_bank
+C:   0000DFB1  _ProjectileSpawn                   projectile_bank
+C:   0000DFB5  _ProjectileTick                    projectile_bank
+C:   0000DFB9  _PickupInit                        projectile_bank
+C:   0000DFBD  _PickupTick                        projectile_bank
+C:   0000DFF6  _DoomFixedMul                      doom_fixed
+C:   0000E190  _DoomFixedDiv                      doom_fixed
+C:   0000E363  _DdrWriteStack                     doom_fixed_stack_abi
+ASxxxx Linker V03.00/V05.40 + sdld,  page 21.
+Hexadecimal  [32-Bits]
+
+Area                                    Addr        Size        Decimal Bytes (Attributes)
+--------------------------------        ----        ----        ------- ----- ------------
+CSEG                                0000010A    0000F490 =       62608. bytes (REL,CON,CODE)
+
+      Value  Global                              Global Defined In Module
+      -----  --------------------------------   ------------------------
+C:   0000E371  _FixedMul                          doom_fixed_stack_abi
+C:   0000E380  _FixedDiv                          doom_fixed_stack_abi
+C:   0000E3AA  __gptrget                          doom_ddr_pointer
+C:   0000E41A  __gptrput                          doom_ddr_pointer
+C:   0000E55D  _DoomCopy16                        doom_video
+C:   0000E5AC  _DoomTranspose16                   doom_video
+C:   0000E69B  _DoomWrite16                       doom_video
+C:   0000E6EB  _DoomRead16                        doom_video
+C:   0000E737  _DoomExpand16                      doom_video
+C:   0000E760  _DoomFillChunk                     doom_video
+C:   0000E768  _DoomShadeChunk                    doom_video
+C:   0000E789  _DoomShadeRun                      doom_video
+C:   0000E7AC  _DoomReciprocalStep                doom_cache_native
+C:   0000E803  _DdrDrawColumn                     doom_cache_native
+C:   0000E8AE  _DdrPresentFrame                   doom_cache_native
+C:   0000E98C  _DdrClearFrame                     doom_cache_native
+C:   0000EA02  _DdrPresentRow                     doom_cache_native
+C:   0000EA37  _DdrGatherTile                     doom_cache_native
+C:   0000EA7E  _DdrLoadColumn                     doom_cache_native
+C:   0000EAC4  _DdrLoadColorMap                   doom_cache_native
+C:   0000EB4E  _DdrFetch                          doom_cache_native
+C:   0000EBFB  _DdrStore                          doom_cache_native
+C:   0000EC5F  _DdrMapRead                        doom_cache_native
+C:   0000EC77  _DdrMapWrite                       doom_cache_native
+C:   0000EC97  _DdrRead                           doom_cache_native
+C:   0000ECB2  _DdrWrite                          doom_cache_native
+C:   0000ECC4  _DdrWriteRaw                       doom_cache_native
+C:   0000EDD0  _labs                              labs
+C:   0000EDE7  __divuint                          _divuint
+C:   0000EE33  __mulint                           _mulint
+C:   0000EECF  _memchr                            _memchr
+C:   0000EF7F  __divslong                         _divslong
+C:   0000F07B  __divulong                         _divulong
+C:   0000F105  ___memcpy                          __memcpy
+C:   0000F198  _memset                            _memset
+C:   0000F1F2  __mullong                          _mullong
+C:   0000F434  __modsint                          _modsint
+C:   0000F4A2  __moduint                          _moduint
+C:   0000F520  __divsint                          _divsint
+C:   0000F596  ___sdcc_external_startup           _startup
+ASxxxx Linker V03.00/V05.40 + sdld,  page 22.
+Hexadecimal  [32-Bits]
+
+Area                                    Addr        Size        Decimal Bytes (Attributes)
+--------------------------------        ----        ----        ------- ----- ------------
+CONST                               0000F59A    000000D2 =         210. bytes (REL,CON,CODE)
+
+      Value  Global                              Global Defined In Module
+      -----  --------------------------------   ------------------------
+C:   0000F59C  _CENTERY                           renderer
+C:   0000F5F2  _xtoviewangleTable                 trig
+
+ASxxxx Linker V03.00/V05.40 + sdld,  page 23.
+Hexadecimal  [32-Bits]
+
+Area                                    Addr        Size        Decimal Bytes (Attributes)
+--------------------------------        ----        ----        ------- ----- ------------
+XINIT                               0000F66C    000000F8 =         248. bytes (REL,CON,CODE)
+
+      Value  Global                              Global Defined In Module
+      -----  --------------------------------   ------------------------
+ASxxxx Linker V03.00/V05.40 + sdld,  page 24.
+
+Files Linked                              [ module(s) ]
+
+/workspace/scratch/5690bd253bc6/doom-keys-repo/tmp/doom-keys/renderer_port.rel
+                                          [  ]
+/workspace/scratch/5690bd253bc6/doom-keys-repo/tmp/doom-keys/renderer.rel
+                                          [  ]
+/workspace/scratch/5690bd253bc6/doom-keys-repo/tmp/doom-keys/trig.rel
+                                          [  ]
+/workspace/scratch/5690bd253bc6/doom-keys-repo/tmp/doom-keys/ddr_cache.rel
+                                          [  ]
+/workspace/scratch/5690bd253bc6/doom-keys-repo/tmp/doom-keys/motion.rel
+                                          [  ]
+/workspace/scratch/5690bd253bc6/doom-keys-repo/tmp/doom-keys/doors.rel
+                                          [  ]
+/workspace/scratch/5690bd253bc6/doom-keys-repo/tmp/doom-keys/projectile_bank.rel
+                                          [  ]
+/workspace/scratch/5690bd253bc6/doom-keys-repo/tmp/doom-keys/fixed_math.rel
+                                          [  ]
+/workspace/scratch/5690bd253bc6/doom-keys-repo/tmp/doom-keys/fixed_stack_abi.rel
+                                          [  ]
+/workspace/scratch/5690bd253bc6/doom-keys-repo/tmp/doom-keys/ddr_pointer.rel
+                                          [  ]
+/workspace/scratch/5690bd253bc6/doom-keys-repo/tmp/doom-keys/gptr_cmp.rel
+                                          [  ]
+/workspace/scratch/5690bd253bc6/doom-keys-repo/tmp/doom-keys/video.rel
+                                          [  ]
+/workspace/scratch/5690bd253bc6/doom-keys-repo/tmp/doom-keys/cache_native.rel
+                                          [  ]
+
+
+Libraries Linked                          [ object file ]
+
+/workspace/scratch/8f0cb3cb5292/sdcc-runtime/usr/share/sdcc/lib/large-stack-auto/libsdcc.lib
+                                          [ labs.rel ]
+/workspace/scratch/8f0cb3cb5292/sdcc-runtime/usr/share/sdcc/lib/large-stack-auto/libint.lib
+                                          [ _divuint.rel ]
+/workspace/scratch/8f0cb3cb5292/sdcc-runtime/usr/share/sdcc/lib/large-stack-auto/mcs51.lib
+                                          [ crtclear.rel ]
+/workspace/scratch/8f0cb3cb5292/sdcc-runtime/usr/share/sdcc/lib/large-stack-auto/mcs51.lib
+                                          [ crtxinit.rel ]
+/workspace/scratch/8f0cb3cb5292/sdcc-runtime/usr/share/sdcc/lib/large-stack-auto/libint.lib
+                                          [ _mulint.rel ]
+/workspace/scratch/8f0cb3cb5292/sdcc-runtime/usr/share/sdcc/lib/large-stack-auto/libsdcc.lib
+                                          [ _memchr.rel ]
+/workspace/scratch/8f0cb3cb5292/sdcc-runtime/usr/share/sdcc/lib/large-stack-auto/mcs51.lib
+                                          [ crtxclear.rel ]
+/workspace/scratch/8f0cb3cb5292/sdcc-runtime/usr/share/sdcc/lib/large-stack-auto/liblong.lib
+                                          [ _divslong.rel ]
+/workspace/scratch/8f0cb3cb5292/sdcc-runtime/usr/share/sdcc/lib/large-stack-auto/liblong.lib
+                                          [ _divulong.rel ]
+/workspace/scratch/8f0cb3cb5292/sdcc-runtime/usr/share/sdcc/lib/large-stack-auto/libsdcc.lib
+                                          [ __memcpy.rel ]
+/workspace/scratch/8f0cb3cb5292/sdcc-runtime/usr/share/sdcc/lib/large-stack-auto/libsdcc.lib
+                                          [ _memset.rel ]
+/workspace/scratch/8f0cb3cb5292/sdcc-runtime/usr/share/sdcc/lib/large-stack-auto/libsdcc.lib
+                                          [ _bp.rel ]
+/workspace/scratch/8f0cb3cb5292/sdcc-runtime/usr/share/sdcc/lib/large-stack-auto/mcs51.lib
+                                          [ gptr_cmp.rel ]
+/workspace/scratch/8f0cb3cb5292/sdcc-runtime/usr/share/sdcc/lib/large-stack-auto/mcs51.lib
+                                          [ crtstart.rel ]
+/workspace/scratch/8f0cb3cb5292/sdcc-runtime/usr/share/sdcc/lib/large-stack-auto/liblong.lib
+                                          [ _mullong.rel ]
+/workspace/scratch/8f0cb3cb5292/sdcc-runtime/usr/share/sdcc/lib/large-stack-auto/libint.lib
+                                          [ _modsint.rel ]
+/workspace/scratch/8f0cb3cb5292/sdcc-runtime/usr/share/sdcc/lib/large-stack-auto/libint.lib
+                                          [ _moduint.rel ]
+/workspace/scratch/8f0cb3cb5292/sdcc-runtime/usr/share/sdcc/lib/large-stack-auto/libint.lib
+                                          [ _divsint.rel ]
+/workspace/scratch/8f0cb3cb5292/sdcc-runtime/usr/share/sdcc/lib/large-stack-auto/libsdcc.lib
+                                          [ _startup.rel ]
+
+ASxxxx Linker V03.00/V05.40 + sdld,  page 25.
+
+User Base Address Definitions
+
+HOME = 0x0000
+XSEG = 0xd700
+PSEG = 0xd700
+ISEG = 0x0000
+BSEG = 0x0000
+
+

@@ -4,6 +4,7 @@
 static void CombatTick(void);
 static void CombatAttack(uint16_t id);
 void ProjectileTick(void) __sdcccall(1);
+void PickupTick(void) __sdcccall(1);
 volatile __xdata __at(0xF6E0) uint16_t actor_info[4];
 static_thing_t *actor_things;
 uint16_t actor_count;
@@ -66,13 +67,15 @@ void R_ActorFrame(void)
     static static_thing_t *things,*thing;
     static const uint16_t *header;
     static uint16_t count,i;
+    static const uint16_t *attacks;
     static uint8_t tick,moved;
     static int16_t x,y,px,py,dx,dy,sx,sy,ceiling;
-    if(!motion_state.enabled || !motion_state.frame_ticks)return;
+    if(!motion_state.enabled || !motion_state.frame_ticks || exit_info[0])return;
     header=DdrPointer(0xD0010UL);things=DdrPointer(0xD0020UL);count=header[0];
     if(count>128){ddr_fault=5;return;}
-    px=motion_state.x>>16;py=motion_state.y>>16;
+    px=motion_state.x>>16;py=motion_state.y>>16;attacks=DdrPointer(0xD3010UL);
     for(tick=0;tick<motion_state.frame_ticks;++tick) {
+        PickupTick();
         CombatTick();
         ProjectileTick();
         ++actor_info[0];actor_info[3]=0;
@@ -98,7 +101,7 @@ void R_ActorFrame(void)
             }
             ++actor_info[3];++thing->tics;
             thing->frame=(thing->tics>>3)&3;
-            if(!(thing->tics&31) && dx>=-512 && dx<=512 && dy>=-512 && dy<=512 &&
+            if((attacks[thing->kind]!=2 || (dx>=-48 && dx<=48 && dy>=-48 && dy<=48)) && !(thing->tics&31) && dx>=-512 && dx<=512 && dy>=-512 && dy<=512 &&
                MotionVisible(x,y,px,py,motion_state.floor+41)) {
                 thing->frame=4;thing->tics=0;continue;
             }

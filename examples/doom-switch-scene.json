@@ -1,0 +1,16 @@
+{
+  "line_specials": {
+    "153": 63
+  },
+  "line_tags": {
+    "153": 123
+  },
+  "sector_tags": {
+    "4": 123
+  },
+  "side_textures": {
+    "211": {
+      "middle": "SW1STRTN"
+    }
+  }
+}

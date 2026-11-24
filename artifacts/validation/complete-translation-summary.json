@@ -1,0 +1,16 @@
+{
+  "unique_tests": 211,
+  "whole_regression": 210,
+  "latest_translation_tests": 12,
+  "overlap": 11,
+  "native_maps": 9,
+  "native_frames": 216,
+  "stack_wraps": 0,
+  "ddr_hazards": 0,
+  "ddr_invalid": 0,
+  "max_stack_pointer": 220,
+  "clean_restore_identical": true,
+  "firmware_sha256": "8b69ff63ca2e941c56a88f74bd2390f03c3c758005ef4dbcdcebc4ced09bac54",
+  "patch_files": 169,
+  "patch_base": "505a3fd65de77f1ea2a50f7debed5909fe206e40"
+}

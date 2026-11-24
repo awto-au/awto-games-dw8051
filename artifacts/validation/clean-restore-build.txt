@@ -1,0 +1,9 @@
+Compiling renderer
+Compiling trig
+Compiling ddr_cache
+Compiling renderer_port
+Compiling motion
+Compiling doors
+tmp/clean-firmware/doom_renderer.bin
+Clean patch native firmware byte-identical: 8b69ff63ca2e941c56a88f74bd2390f03c3c758005ef4dbcdcebc4ced09bac54
+Clean simulator verified translated E1M6: 0 0 0

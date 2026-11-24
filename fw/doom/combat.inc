@@ -1,11 +1,11 @@
 /* Standalone deterministic combat. Not vanilla Doom rules. */
+#define HUD_KEY_BLUE_INDEX 200
+#define HUD_KEY_YELLOW_INDEX 160
+#define HUD_KEY_RED_INDEX 176
 void ProjectileInit(void) __sdcccall(1);
 void ProjectileSpawn(uint16_t owner) __sdcccall(1);
-typedef struct {
-    uint16_t health,ammo,shots,hits,kills,damage,attacks,dead;
-    uint8_t wait,flash,hurt,spare;
-    uint16_t target;
-} combat_state_t;
+void PickupInit(void) __sdcccall(1);
+volatile __xdata __at(0xF740) uint16_t pickup_info[4];
 volatile __xdata __at(0xF700) combat_state_t combat;
 volatile __xdata __at(0xF71E) uint8_t combat_hud;
 __code __at(0xFF90) const uint16_t combat_schema[] = {sizeof(combat_state_t)};
@@ -15,6 +15,7 @@ void R_CombatInit(void)
     combat.shots=combat.hits=combat.kills=combat.damage=combat.attacks=combat.dead=0;
     combat.wait=combat.flash=combat.hurt=combat.spare=0;combat.target=0;
     ProjectileInit();
+    PickupInit();
 }
 uint8_t R_PlayerAlive(void) {return combat.health!=0;}
 static void CombatTick(void)
@@ -67,63 +68,12 @@ static void CombatAttack(uint16_t id)
         if(MotionVisible(x,y,motion_state.x>>16,motion_state.y>>16,z))PlayerDamage(10);
         return;
     }
+    if(kinds[actor_things[id].kind]==2)return;
     if(kinds[actor_things[id].kind]) {
         if(MotionVisible(x,y,motion_state.x>>16,motion_state.y>>16,z))ProjectileSpawn(id);
     } else {
         z=motion_state.floor+41;
         if(z<actor_things[id].floor || z>=actor_things[id].floor+56)return;
         if(MotionVisible(x,y,motion_state.x>>16,motion_state.y>>16,z))PlayerDamage(10);
-    }
-}
-
-static void HudPixel(uint8_t x,uint8_t y,uint8_t color)
-{
-    uint8_t *p=DdrPointer(DOOM_INDEXED_BASE+(uint16_t)x*128U+y);*p=color;
-}
-static const __code uint16_t hud_digits[10]={0x7B6F,0x2492,0x73E7,0x73CF,0x5BC9,0x79CF,0x79EF,0x7249,0x7BEF,0x7BCF};
-static void HudNumber(uint8_t x,uint16_t value)
-{
-    static uint8_t digit,row,col,n;
-    static uint16_t bits,divisor;
-    divisor=100;
-    for(n=0;n<3;++n) {
-        digit=value/divisor;value%=divisor;divisor/=10;
-        bits=hud_digits[digit%10];
-        for(row=0;row<5;++row)for(col=0;col<3;++col)
-            HudPixel(x+col,DOOM_VIEW_HEIGHT-7+row,(bits&(1U<<(14-row*3-col))) ? 4:0);
-        x+=4;
-    }
-}
-static void HudPatch(uint8_t id,uint8_t width,uint8_t height,uint8_t bottom)
-{
-    static const static_patch_t *patch;
-    static uint8_t x,y,sx,sy;
-    static uint32_t address;
-    patch=(const static_patch_t *)DdrPointer(0x1D0010UL)+id;
-    for(x=0;x<width;++x) {
-        sx=(uint16_t)x*patch->width/width;
-        address=patch->pixels+(uint32_t)sx*256UL;
-        for(y=0;y<height;++y) {
-            sy=(uint16_t)y*patch->height/height;
-            if(DdrRead(address+(uint16_t)sy*2+1))
-                HudPixel((DOOM_VIEW_WIDTH-width)/2+x,bottom-height+y,DdrRead(address+(uint16_t)sy*2));
-        }
-    }
-}
-void R_DrawCombatHUD(void)
-{
-    static uint8_t x,y;
-    if(!combat_hud)return;
-    if(DOOM_VIEW_HEIGHT>=48) {
-        HudPatch(combat.flash ? 1:0,8,DOOM_VIEW_HEIGHT/3,DOOM_VIEW_HEIGHT-9);
-        if(combat.flash)HudPatch(2,8,16,DOOM_VIEW_HEIGHT-9-DOOM_VIEW_HEIGHT/3+8);
-    }
-    HudPixel(DOOM_VIEW_WIDTH/2,DOOM_VIEW_HEIGHT/2,4);
-    HudPixel(DOOM_VIEW_WIDTH/2-1,DOOM_VIEW_HEIGHT/2,4);
-    HudPixel(DOOM_VIEW_WIDTH/2+1,DOOM_VIEW_HEIGHT/2,4);
-    HudNumber(2,combat.health);HudNumber(DOOM_VIEW_WIDTH-13,combat.ammo);
-    if(combat.hurt || combat.dead) {
-        for(x=0;x<DOOM_VIEW_WIDTH;++x){HudPixel(x,0,176);HudPixel(x,DOOM_VIEW_HEIGHT-1,176);}
-        for(y=1;y<DOOM_VIEW_HEIGHT-1;++y){HudPixel(0,y,176);HudPixel(DOOM_VIEW_WIDTH-1,y,176);}
     }
 }

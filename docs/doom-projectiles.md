@@ -1,5 +1,8 @@
 # Native ranged attacks and fireballs
 
+Historical format-5 checkpoint. Read [doom-pickups.md](doom-pickups.md) for the
+latest format-6 image, native health/ammo items, validation and captures.
+
 24 November 2026. Soldiers now fire deterministic ranged shots, and imps throw
 visible fireballs. Balls travel independently of the shooter, can be dodged,
 impact walls or the player and show the original explosion frames. All attack,

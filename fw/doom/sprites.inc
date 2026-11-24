@@ -20,7 +20,7 @@ static void R_StaticSprites(void)
     static uint8_t color;
     header=DdrPointer(0xD0010UL);things=DdrPointer(0xD0020UL);patches=DdrPointer(0xE0010UL);
     monsters=header[0];count=header[1];
-    if(count>136) {ddr_fault=5;return;}
+    if(count>136+DOOM_PICKUP_MAX) {ddr_fault=5;return;}
     sprite_info[0]=count;sprite_info[1]=0;sprite_info[2]=0;sprite_info[3]=0;
     for(i=0;i<count;++i) {
         thing=things+i;
@@ -47,7 +47,7 @@ static void R_StaticSprites(void)
         if(!patch->width) continue;
         sector=R_PointInSubsector(dx,dy)->sector;
         floor=sector->floorheight>>16;light=sector->lightlevel;
-        if(best>=monsters){floor=thing->floor;light=255;}
+        if(best>=monsters && best<monsters+8){floor=thing->floor;light=255;}
         tx=FixedMul(dx-viewx,viewsin)-FixedMul(dy-viewy,viewcos);
         xscale=PROJECTION/(tz>>16);scale=((int32_t)DOOM_VIEW_HEIGHT*65536L)/(tz>>16);
         tx-=(int32_t)(patch->flip ? patch->width-patch->left : patch->left)*65536L;

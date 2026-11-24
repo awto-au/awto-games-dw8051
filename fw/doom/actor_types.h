@@ -7,4 +7,18 @@ typedef struct {
     uint32_t pixels;
     uint8_t flip,reserved[3];
 } static_patch_t;
+typedef struct {
+    uint16_t health,ammo,shots,hits,kills,damage,attacks,dead;
+    uint8_t wait,flash,hurt,spare;
+    uint16_t target;
+} combat_state_t;
+#define DOOM_PICKUP_HEADER_BASE 0xD8010UL
+#define DOOM_PICKUP_MAX 128
+#define DOOM_PICKUP_RULES 11
+#define DOOM_FIRST_KEY_RULE 5
+#define DOOM_PICKUP_RADIUS 20
+#define DOOM_PICKUP_FLASH_TICKS 5
+#define DOOM_NORMAL_HEALTH 100
+#define DOOM_BONUS_HEALTH 200
+#define DOOM_MAX_BULLETS 200
 #endif

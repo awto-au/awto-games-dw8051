@@ -3,7 +3,7 @@
 
 No host rendering: Python packs WAD assets and loads simulated DDR, then the
 8051 executes projection, BSP traversal, clipping, columns and palette output.
-This is renderer/controller bring-up with native pistol/contact combat, not a complete Doom port.
+This is renderer/controller bring-up with native combat, fireballs and pickups, not a complete Doom port.
 """
 from __future__ import annotations
 import argparse
@@ -231,6 +231,9 @@ static void R_DrawSegTextureColumn(const texture_t *tex, int16_t n, int16_t col,
     text = text.replace("void R_RenderPlayerView (player_t* player)",
                         "static void R_StaticSprites(void);\nvoid R_RenderPlayerView (player_t* player)")
     text = text.replace("    R_FreeSkyPatch ();", "    R_FreeSkyPatch ();\n    R_StaticSprites();")
+    text=text.replace("static void R_RenderSegLoop(","void R_PlatformPlane(int16_t pic,int32_t height,int16_t light,const draw_column_vars_t *dc);\nstatic void R_RenderSegLoop(")
+    text=text.replace("R_DrawColumnFlat(ceilingplane_color, &dcvars);","R_PlatformPlane(frontsector->ceilingpic,frontsector->ceilingheight,frontsector->lightlevel,&dcvars);")
+    text=text.replace("R_DrawColumnFlat(floorplane_color, &dcvars);","R_PlatformPlane(frontsector->floorpic,frontsector->floorheight,frontsector->lightlevel,&dcvars);")
     text += "\n" + (ROOT/"fw/doom/sprites.inc").read_text()+"\n"+(ROOT/"fw/doom/actors.inc").read_text()+"\n"+(ROOT/"fw/doom/combat.inc").read_text()
     text += "\nvoid R_PlatformInit(void) {\n" + "\n".join(initializers) + """
 _s_drawsegs = DdrPointer(0xB0010UL);
@@ -298,7 +301,7 @@ def build(sdcc, linker, libdir, out, cache_sdcc=None, width=60, height=128):
     return tables
 
 
-def simulate(wad, out, *, yaw=None, latency=0, drop_every=0, frames=1, yaw_step=0, commands=None, initial_pose=None, input_provider=None, on_frame=None, save_frames=True, hud=True):
+def simulate(wad, out, *, yaw=None, latency=0, drop_every=0, frames=1, yaw_step=0, commands=None, initial_pose=None, input_provider=None, on_frame=None, save_frames=True, hud=True, scene=None, mapname="E1M1", packed=None):
     import fastmachine as F
     import ddr_sim as D
     import doom_sim as S
@@ -324,7 +327,11 @@ def simulate(wad, out, *, yaw=None, latency=0, drop_every=0, frames=1, yaw_step=
     core.set_ddr(D.config(), latency_clk=latency)
     core.L.core_ddr_drop_every(core.h, 0, drop_every)
     try:
-        boot, assets = doom_assets.pack(wad, image, core.ddr_mem(), out, yaw=yaw)
+        if packed:
+            if scene is not None or yaw is not None:raise ValueError('translated scenes use their packed pose and map data')
+            boot,assets=doom_assets.load_native(packed,image,core.ddr_mem())
+        else:
+            boot, assets = doom_assets.pack(wad, image, core.ddr_mem(), out, mapname=mapname, yaw=yaw,**({'scene':scene} if scene is not None else {}))
         if initial_pose is not None:
             boot=boot[:50]+struct.pack("<iiIi",initial_pose["x"],initial_pose["y"],initial_pose["angle"],initial_pose["viewz"])+boot[66:]
         initial_health=[]
@@ -425,18 +432,80 @@ def simulate(wad, out, *, yaw=None, latency=0, drop_every=0, frames=1, yaw_step=
                 assert ps["spawned"]-ps["walls"]-ps["hits"]-ps["expired"]==sum(s["active"] and s["phase"]==1 for s in slots),"native fireball accounting mismatch"
                 projectiles=dict(stats=ps,slots=slots,verified=True)
             combat=None
+            pickups=None
+            pickup_assets=(assets.get('monsters') or {}).get('pickups') or {}
+            if pickup_assets.get('enabled'):
+                ps=dict(zip(('collected','health_added','ammo_added','flash'),struct.unpack('<4H',core.xram[0xF740:0xF748])))
+                items=[]
+                for pi,original in enumerate(pickup_assets['things']):
+                    row=struct.unpack_from('<hhHHiHBBhH',ram,0xD0020+(assets['monsters']['count']+8+pi)*20)
+                    assert (row[0],row[1],row[3],row[5])==(original['x'],original['y'],original['kind'],original['rule']), 'native pickup moved or changed kind'
+                    assert row[9] in (0,1), 'invalid native pickup active flag'
+                    items.append(dict(x=row[0],y=row[1],floor=row[8],kind=row[3],rule=row[5],active=bool(row[9])))
+                assert ps['collected']==sum(not p['active'] for p in items),'native pickup consumption accounting mismatch'
+                assert ps['flash']<=5
+                assert ps['health_added']<=sum({0:10,1:25,2:1}.get(p['rule'],0) for p in items if not p['active'])
+                assert ps['ammo_added']<=sum({3:10,4:50}.get(p['rule'],0) for p in items if not p['active'])
+                previous=completed[-1].get('pickups') if completed else None
+                for pi,p in enumerate(items):
+                    before=previous['items'][pi] if previous else dict(active=True)
+                    assert before['active'] or not p['active'], 'collected native pickup reappeared'
+                    if before['active'] and not p['active']:
+                        assert abs(p['x']-(motion['x']>>16))<=20 and abs(p['y']-(motion['y']>>16))<=20, 'remote native pickup collected'
+                        assert -8<=p['floor']-motion['floor']<=56, 'native pickup collected at wrong height'
+                pickups=dict(stats=ps,items=items,verified=True)
+            inventory=None
+            if image[0xFFF0:0xFFF4]==b'D805' and image[0xFFF4]>=7:
+                inventory=dict(zip(('keys','needed','denied','notice'),struct.unpack('<4H',core.xram[0xF748:0xF750])))
+                expected_keys=0
+                for p in pickups['items'] if pickups else []:
+                    if p['rule']>=5 and not p['active']:expected_keys|=1<<(p['rule']-5)
+                assert inventory['keys']==expected_keys,'native key inventory does not match collected items'
+                assert inventory['keys']<64 and inventory['needed'] in (0,1,2,4) and inventory['notice']<=35
+                inventory['verified']=True
+            switches=None
+            if 'switches' in assets:
+                ss=dict(zip(('activations','resets','consumed','last'),struct.unpack('<4H',core.xram[0xF750:0xF758])))
+                timers=list(core.xram[0xF760:0xF760+len(assets['switches'])])
+                assert ss['consumed']<1<<len(timers) and ss['last']<=len(timers)
+                for si,definition in enumerate(assets['switches']):
+                    assert timers[si]<=35
+                    if definition['texture']:
+                        tex=struct.unpack_from('<h',ram,definition['texture'])[0]
+                        assert tex==(definition['on'] if timers[si] or ss['consumed']&(1<<si) else definition['off']),'native switch texture mismatch'
+                previous=completed[-1].get('switches') if completed else None
+                old_activations=previous['stats']['activations'] if previous else 0
+                if ss['activations']>old_activations:
+                    definition=assets['switches'][ss['last']-1]
+                    before=completed[-1]['doors']['activations'] if completed else 0
+                    assert doors['activations']-before==definition['mask'].bit_count(),'native switch target activation mismatch'
+                switches=dict(stats=ss,timers=timers,verified=True)
             if image[0xFFF0:0xFFF4]==b"D805":
                 raw=struct.unpack("<8H4BH",core.xram[0xF700:0xF716])
                 combat=dict(zip(("health","ammo","shots","hits","kills","damage","attacks","dead","wait","flash","hurt","spare","target"),raw))
-                assert combat["ammo"]+combat["shots"]==50,"native ammunition accounting mismatch"
+                assert combat["ammo"]+combat["shots"]==50+(pickups['stats']['ammo_added'] if pickups else 0),"native ammunition accounting mismatch"
                 assert combat["hits"]<=combat["shots"] and combat["kills"]<=combat["hits"]
-                assert combat["health"]==max(0,100-combat["damage"]),"native player damage mismatch"
+                assert combat["health"]==max(0,100+(pickups['stats']['health_added'] if pickups else 0)-combat["damage"]),"native player damage mismatch"
+                assert combat['health']<=200 and combat['ammo']<=200
                 assert bool(combat["dead"])==(combat["health"]==0)
                 if actors is not None:
-                    assert sum(h-t["health"] for h,t in zip(initial_health,actors["things"]))==20*combat["hits"],"native actor damage accounting mismatch"
+                    assert sum((h+19)//20-(t["health"]+19)//20 for h,t in zip(initial_health,actors["things"]))==combat["hits"],"native actor damage accounting mismatch"
+                    assert all(0<=t['health']<=h and (not t['health'] or (h-t['health'])%20==0) for h,t in zip(initial_health,actors['things'])),"native actor damage step mismatch"
                     assert sum(t["health"]==0 for t in actors["things"])==combat["kills"],"native kill accounting mismatch"
                 combat["verified"]=True
-            completed.append(dict(cpu_clk=elapsed,model_ms=elapsed*1000/S.CPU_HZ,sprites=sprite_state,actors=actors,combat=combat,projectiles=projectiles,
+            exit_state=None
+            if image[0xFFF0:0xFFF4]==b'D805' and image[0xFFF4]>=9:
+                exit_state=dict(zip(('kind','line','activations','reserved'),struct.unpack('<4H',core.xram[0xF770:0xF778])))
+                assert exit_state['kind'] in (0,1,2) and exit_state['activations']==bool(exit_state['kind'])
+                if exit_state['kind']:
+                    assert any(s['line']==exit_state['line'] and s['kind']==exit_state['kind'] for s in assets['switches']),'native exit does not match a packed exit line'
+                    assert combat['health']>0
+                if completed and completed[-1].get('exit',{}).get('kind'):
+                    before=completed[-1]
+                    for key,value in (('combat',combat),('actors',actors),('projectiles',projectiles),('pickups',pickups),('inventory',inventory),('switches',switches),('doors',doors),('exit',exit_state)):
+                        assert before[key]==value,'game state advanced after native exit: '+key
+                    assert all(before['motion'][k]==motion[k] for k in ('x','y','angle','floor','ceiling','ticks')),'player moved after native exit'
+            completed.append(dict(cpu_clk=elapsed,model_ms=elapsed*1000/S.CPU_HZ,sprites=sprite_state,actors=actors,combat=combat,projectiles=projectiles,pickups=pickups,inventory=inventory,switches=switches,exit=exit_state,
                                   doors=doors,world_verified=world_verified,motion=motion,motion_verified=motion_verified,motion_clk=phase_clocks[4]-phase_clocks[2],
                                   render_clk=phase_clocks[3]-phase_clocks[2],
                                   present_flush_clk=core.p.clk-phase_clocks[3],
@@ -469,7 +538,7 @@ def simulate(wad, out, *, yaw=None, latency=0, drop_every=0, frames=1, yaw_step=
                       max_frame_ms=max(f["model_ms"] for f in completed),
                       timing="Frame zero starts after one-time initialization. Later complete frame intervals include native control/advance overhead. Every frame includes enabled native movement, indexed clearing, rendering, RGB conversion, DDR writes and flush. Total model_ms includes startup. Host capture pauses consume no simulated CPU clocks.",
                       min_equivalent_fps=1000/max(f["model_ms"] for f in completed),
-                      scope="Native Doom8088 BSP/wall renderer with animated ground monsters. Flat planes/sky; native standalone movement/collision and manual doors. Native sight/chase, pistol combat, soldier ranged shots, imp fireballs and HUD. No original game thinkers. Ideal DDR unless specified; not measured hardware FPS.")
+                      scope="Native Doom8088 BSP/wall renderer with animated ground monsters. Textured native planes/sky; standalone movement/collision and manual doors. Native sight/chase, pistol combat, soldier ranged shots, imp fireballs, health/ammo pickups and HUD. No original game thinkers. Ideal DDR unless specified; not measured hardware FPS.")
         (out / "renderer-results.json").write_text(json.dumps(result, indent=2)+"\n")
         return result, preview
     finally:
@@ -511,10 +580,13 @@ def main():
     p.add_argument("--width",type=int,default=60)
     p.add_argument("--height",type=int,default=128)
     p.add_argument("--wad", type=Path, help="original Doom 1 shareware IWAD, not preprocessed")
+    p.add_argument("--map",default="E1M1",help="original map marker, e.g. E1M6")
+    p.add_argument("--packed",type=Path,help="translated native map folder; no IWAD needed")
     p.add_argument("--yaw", type=int, help="camera angle in degrees; defaults to player start")
     p.add_argument("--latency", type=int, default=0, help="additional DDR command clocks")
     p.add_argument("--drop-every", type=int, default=0, help="drop every nth read ready")
     p.add_argument("--pose",type=Path,help="optional initial native fixed-point x/y/angle/viewz JSON")
+    p.add_argument("--scene",type=Path,help="explicit initial demonstration edits; never live gameplay")
     p.add_argument("--commands",type=Path,help="JSON list of per-frame forward/strafe/turn commands")
     p.add_argument("--frames",type=int,default=1)
     p.add_argument("--yaw-step",type=float,default=0)
@@ -525,9 +597,9 @@ def main():
     if not a.skip_build:
         build(a.sdcc.absolute(), (a.linker or a.sdcc).absolute(), a.libdir.resolve(), a.out.resolve(), a.cache_sdcc.absolute() if a.cache_sdcc else None,a.width,a.height)
     print(a.out / ("doom_renderer.bin" if (a.out/"banking.json").exists() else "doom_renderer.ihx"))
-    if a.wad:
+    if a.wad or a.packed:
         commands=json.loads(a.commands.read_text()) if a.commands else None
-        result, frame = simulate(a.wad, a.out, yaw=a.yaw, latency=a.latency, drop_every=a.drop_every, frames=len(commands) if commands else a.frames, yaw_step=a.yaw_step, commands=commands,initial_pose=json.loads(a.pose.read_text()) if a.pose else None)
+        result, frame = simulate(a.wad, a.out, mapname=a.map, packed=a.packed, yaw=a.yaw, latency=a.latency, drop_every=a.drop_every, frames=len(commands) if commands else a.frames, yaw_step=a.yaw_step, commands=commands,initial_pose=json.loads(a.pose.read_text()) if a.pose else None,scene=json.loads(a.scene.read_text()) if a.scene else None)
         if a.capture_stream:
             result["vlc"] = capture_stream(frame, a.out)
             (a.out/"renderer-results.json").write_text(json.dumps(result,indent=2)+"\n")

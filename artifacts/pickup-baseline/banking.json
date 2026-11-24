@@ -1,0 +1,29 @@
+{
+  "bank0_sha256": "be9a7dc54968f895bbfb9e9a120da68bb0c7ea28270f3d9995151de5febb36e4",
+  "image_sha256": "2e2038317b2df782e47be1199fd323b8d3717ea7127b38149b361599883b656f",
+  "banks": 2,
+  "overlay_start": 20480,
+  "overlay_end": 26126,
+  "common_end": 20480,
+  "imports": {
+    "_actor_count": 56319,
+    "_PlayerDamage": 41095,
+    "bp": 10,
+    "_ddr_fault": 56446,
+    "__gptrput": 57915,
+    "_combat": 63232,
+    "__mulint": 60500,
+    "_DdrPointer": 44485,
+    "_MotionVisible": 51123,
+    "_actor_things": 56316,
+    "_FixedDiv": 57761,
+    "_motion_state": 63136,
+    "_pickup_info": 63296,
+    "_MotionSectorAt": 1662,
+    "__gptrget": 57803
+  },
+  "engine_xram_start": 57074,
+  "engine_xram_end": 57153,
+  "engine_xram_bytes": 79,
+  "note": "Two native code banks; common bytes and callable dependencies are duplicated. Bank selection uses the existing simulator MOVX FFFF model, not verified monitor register wiring."
+}

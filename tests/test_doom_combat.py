@@ -23,6 +23,9 @@ def fixture_actors(monkeypatch,rows,*,frame=0,tics=0,awake=0):
             x,y,health=row[:3];kind=row[3] if len(row)>3 else 0
             struct.pack_into('<hhHHiHBBhH',memory,0xD0020+i*20,x,y,32768,kind,0,tics,frame,awake,0,health)
         assets['monsters']['count']=len(rows)
+        # Combat fixtures isolate actors from unrelated original map pickups.
+        struct.pack_into('<H',memory,0xD8010,0)
+        if 'pickups' in assets['monsters']:assets['monsters']['pickups'].update(count=0,things=[])
         return boot,assets
     monkeypatch.setattr(A,'pack',load)
 

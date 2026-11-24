@@ -1,0 +1,53 @@
+{
+  "bank0_sha256": "8ac49c23d65154772c7950a2a5880665daf2b3dcc44c1d63137a25fee4f625a5",
+  "image_sha256": "8b69ff63ca2e941c56a88f74bd2390f03c3c758005ef4dbcdcebc4ced09bac54",
+  "banks": 3,
+  "graphics": {
+    "overlay_start": 20480,
+    "overlay_end": 28700,
+    "engine_xram_start": 57105,
+    "engine_xram_end": 57180,
+    "engine_xram_bytes": 75,
+    "imports": {
+      "bp": 10,
+      "__gptrput": 59520,
+      "_combat": 63232,
+      "__mulint": 62029,
+      "_DdrPointer": 44314,
+      "_exit_info": 63344,
+      "_graphics": 62208,
+      "_FixedDiv": 59366,
+      "_key_info": 63304,
+      "_combat_hud": 63262,
+      "_DdrRead": 61693,
+      "_pickup_info": 63296,
+      "__gptrget": 59408,
+      "_FixedMul": 59351
+    }
+  },
+  "overlay_start": 20480,
+  "overlay_end": 26237,
+  "common_end": 20480,
+  "imports": {
+    "_actor_count": 56319,
+    "_PlayerDamage": 42345,
+    "bp": 10,
+    "_ddr_fault": 56428,
+    "__gptrput": 59520,
+    "_combat": 63232,
+    "__mulint": 62029,
+    "_DdrPointer": 44314,
+    "_MotionVisible": 50961,
+    "_actor_things": 56316,
+    "_FixedDiv": 59366,
+    "_key_info": 63304,
+    "_motion_state": 63136,
+    "_pickup_info": 63296,
+    "_MotionSectorAt": 2377,
+    "__gptrget": 59408
+  },
+  "engine_xram_start": 57026,
+  "engine_xram_end": 57105,
+  "engine_xram_bytes": 79,
+  "note": "Three native code banks; common bytes and callable dependencies are duplicated. Bank selection uses the existing simulator MOVX FFFF model, not verified monitor register wiring."
+}

@@ -1,3 +1,17 @@
+# Native 8051 Doom (complete download, 2026-11-25)
+
+Complete supplied-WAD translation, format 10: all nine shareware maps (E1M1-E1M9) render on the simulated 8051.
+Read `docs/doom-translation.md`, then `docs/doom-vscode-handoff.md`. Original download README: `docs/download-README.md`.
+
+- `wads/doom1.wad`: shareware Doom 1.9 episode 1 IWAD, included unmodified (id Software shareware licence permits redistribution of the unmodified shareware; no registered Doom / Doom II WAD is included).
+- `translated/`: decoded graphics, palettes, `doom-assets.dpak` (incl. verbatim `raw/` lumps), normalized map data, DDR scenes and prebuilt firmware for E1M1-E1M9 (`translated/native/<map>/`), `translation-report.json`.
+- `previews/`: episode preview, gameplay movies, screenshots.
+- `play.py`: `python play.py --map E1M1` (prebuilt firmware; gcc builds the native sim on first use; needs `requirements.txt`).
+- `verify_download.py` + `download-manifest.json`: SHA-256 check of every file from the download (paths are repo-relative).
+- `artifacts/`: now also exit/fireball/keys/pickup/switch baselines; `current/` is the format-10 three-bank image (196,608 B BIN). The previous `current/` is `artifacts/fireball-baseline/`.
+- `docs/checkpoints/`: per-checkpoint READMEs (newest: `translated/PROJECT_README.md`).
+- Tests: `AWTO_DOOM_WAD=wads/doom1.wad pytest tests/test_doom_*.py`. SDCC tests need `AWTO_DOOM_SDCC`, `AWTO_DOOM_LINKER`, `AWTO_DOOM_LIB_*`. A few tests need awto-ddc files (`scripts/dw8051_model.json`, `fw/sdk` headers) until the awto-ddc submodule lands (awto-au/awto-ddc#345).
+
 # Native 8051 Doom: soldier shots and imp fireballs
 
 Updated 24 November 2026. Start with source/docs/doom-projectiles.md.
@@ -50,9 +64,9 @@ for setup, current format requirements and next gameplay checkpoints.
 - `artifacts/`: checkpoint baselines, `current/` (format-5 two-bank image + movies), validation, results, `doom-ddr.patch`, `soldier-checkpoint.patch`.
 - `docs/checkpoints/`: per-checkpoint READMEs.
 - Host tools import the awto-ddc simulator pieces (`fastmachine.py`, `ddr_sim.py`); see docs/doom-vscode-handoff.md for setup.
-- No IWAD, decoded assets or proprietary SDK are committed.
+- No proprietary SDK is committed.
 
 ## Not in this repo
 
-- The Doom IWAD and decoded lump data. Rendered frames, movies and images are included (Dan, 2026-11-25: fine to host publicly).
+- Registered Doom / Doom II WADs (only the shareware `wads/doom1.wad` is included).
 - Asteroids / Pac-Man ROM data: never committed; builds fall back to hand-made shapes.

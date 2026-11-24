@@ -1,0 +1,29 @@
+{
+  "format": 8,
+  "native_frames": 59,
+  "max_model_ms": 257.2718912400831,
+  "model_duration_seconds": 8.912392130926962,
+  "stack_high": 216,
+  "stack_wraps": 0,
+  "ddr_invalid": 0,
+  "ddr_hazards": 0,
+  "final_switches": {
+    "stats": {
+      "activations": 1,
+      "resets": 1,
+      "consumed": 0,
+      "last": 1
+    },
+    "timers": [
+      0
+    ],
+    "verified": true
+  },
+  "door_activations": 1,
+  "clean_restore_verified": true,
+  "hardware_flashed": false,
+  "committed": false,
+  "pushed": false,
+  "tests_passed": 184,
+  "tests_skipped": 0
+}

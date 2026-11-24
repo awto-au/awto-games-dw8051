@@ -90,6 +90,9 @@ def test_real_actor_reopens_a_closing_door(sprite_renderer,monkeypatch):
         struct.pack_into('<H',memory,0xD0010,1)
         struct.pack_into('<hhHHiHBBhH',memory,0xD0020,1544,-2496,32768,0,0,0,0,0,0,0)
         assets['monsters']['count']=1
+        # This door-obstruction scene replaces the original render-record list.
+        struct.pack_into('<H',memory,0xD8010,0)
+        if 'pickups' in assets['monsters']:assets['monsters']['pickups'].update(count=0,things=[])
         schema=assets['schema'];secsz,fo,co=schema[:3]
         struct.pack_into('<i',memory,0x20010+door['sector']*secsz+co,door['top']*65536)
         # Update the static initial profiles to match this initial ceiling.

@@ -1,0 +1,21 @@
+{
+  "tests_passed": 163,
+  "skipped": 0,
+  "format": 7,
+  "native_frames": 111,
+  "max_model_frame_ms": 273.91620651613067,
+  "stack_high": 219,
+  "main_final_inventory": {
+    "keys": 1,
+    "needed": 0,
+    "denied": 1,
+    "notice": 0,
+    "verified": true
+  },
+  "native_key_events_verified": true,
+  "scene": "Explicit initial E1M1 test edits, not original key/lock placement",
+  "clean_restore_verified": true,
+  "hardware_flashed": false,
+  "committed": false,
+  "pushed": false
+}

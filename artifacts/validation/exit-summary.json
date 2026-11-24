@@ -1,0 +1,26 @@
+{
+  "format": 9,
+  "native_frames": 41,
+  "max_model_ms": 101.53677830959175,
+  "model_duration_seconds": 3.659258681095011,
+  "stack_high": 214,
+  "stack_wraps": 0,
+  "ddr_invalid": 0,
+  "ddr_hazards": 0,
+  "exit_state": {
+    "kind": 1,
+    "line": 330,
+    "activations": 1,
+    "reserved": 0
+  },
+  "first_completed_frame": 20,
+  "post_exit_input_frames": 20,
+  "clean_restore_verified": true,
+  "original_e1m1_without_scene_edits": true,
+  "next_map_loading": false,
+  "hardware_flashed": false,
+  "committed": false,
+  "pushed": false,
+  "tests_passed": 199,
+  "tests_skipped": 0
+}

@@ -4,9 +4,11 @@
 #include "platform.h"
 #include "motion.h"
 #include "doors.h"
+#include "graphics.h"
 #include "globdata.h"
 #include <stddef.h>
 __sfr __at(DOOM_SFR_CKCON) doom_ckcon;
+__xdata __at(DOOM_GRAPHICS_MAILBOX) graphics_mailbox_t graphics;
 
 const seg_t *_g_segs;
 int16_t _g_numsectors, _g_numlines;
@@ -65,7 +67,7 @@ void R_ActorInit(void);
 void R_CombatInit(void);
 uint8_t R_PlayerAlive(void);
 void R_DrawCombatHUD(void);
-__code __at(0xFFF0) const uint8_t renderer_format[] = {'D','8','0','5',5};
+__code __at(0xFFF0) const uint8_t renderer_format[] = {'D','8','0','5',10};
 /* The renderer uses stack arguments; the non-reentrant cache uses ABI 1. */
 void DdrWriteStack(uint32_t address, uint8_t value);
 const texture_t *R_GetTexture(int16_t n) { return textures + n; }
@@ -111,7 +113,26 @@ byte R_GetPlaneColor(int16_t picnum, int16_t lightlevel)
 }
 void R_LoadSkyPatch(void) { }
 void R_FreeSkyPatch(void) { }
-void R_DrawSky(draw_column_vars_t *dc) { R_DrawColumnFlat(99, dc); }
+int32_t finesineapprox(int16_t angle);
+int32_t finecosineapprox(int16_t angle);
+static void plane_camera(const draw_column_vars_t *dc)
+{
+    graphics.x=_g_player.mo->x;graphics.y=_g_player.mo->y;graphics.z=_g_player.viewz;
+    graphics.angle=_g_player.mo->angle;
+    graphics.cosine=finecosineapprox(graphics.angle>>19);
+    graphics.sine=finesineapprox(graphics.angle>>19);
+    graphics.column=dc->x;graphics.first=dc->yl;graphics.last=dc->yh;
+}
+void R_PlatformPlane(int16_t pic,int32_t height,int16_t light,const draw_column_vars_t *dc)
+{
+    plane_camera(dc);graphics.pic=pic;graphics.height=height;graphics.light=light;graphics.flags=0;
+    R_DrawPlaneBank();
+}
+extern const __code uint16_t xtoviewangleTable[DOOM_VIEW_WIDTH+1];
+void R_DrawSky(draw_column_vars_t *dc)
+{
+    plane_camera(dc);graphics.angle+=(uint32_t)xtoviewangleTable[dc->x]<<16;graphics.flags=DOOM_SKY_FLAG;R_DrawPlaneBank();
+}
 
 void MotionSectorAt(int32_t x,int32_t y,int16_t *floor,int16_t *ceiling)
 {
@@ -167,7 +188,7 @@ void main(void)
     if (!frames) frames = 1;
     do {
         renderer_status[0] = 2;
-        if(R_PlayerAlive()) MotionFrame();
+        if(R_PlayerAlive() && !exit_info[0]) MotionFrame();
         else {motion_state.enabled=motion_input.enabled;motion_state.frame_ticks=0;}
         if(motion_state.enabled) {
             camera.x=motion_state.x;camera.y=motion_state.y;camera.angle=motion_state.angle;
@@ -186,8 +207,8 @@ void main(void)
             renderer_ack = 0;
             renderer_status[0] = 0xA4;
             while (!renderer_ack) { }
-            ++_g_gametic;
-            if(!motion_input.enabled) {camera.angle += renderer_angle_step;motion_state.angle=camera.angle;}
+            if(!exit_info[0])++_g_gametic;
+            if(!motion_input.enabled && !exit_info[0]) {camera.angle += renderer_angle_step;motion_state.angle=camera.angle;}
         } else renderer_status[0] = 0xA5;
     } while (frames);
     for (;;) { }

@@ -7,6 +7,7 @@ volatile __xdata __at(0xF642) int16_t floor_a;
 volatile __xdata __at(0xF644) int16_t floor_b;
 volatile __xdata __at(0xF646) int16_t ceiling_a;
 volatile __xdata __at(0xF648) int16_t ceiling_b;
+volatile __xdata __at(0xF64A) uint16_t initial_keys;
 __xdata uint16_t doom_column_target,doom_column_frac,doom_column_step;
 __xdata uint8_t doom_column_count;
 int32_t finecosineapprox(int16_t angle) {
@@ -33,6 +34,7 @@ void main(void) {
     motion_state.floor=floor_a;motion_state.ceiling=ceiling_a;
     MotionInit(MOTION_LINES_BASE,MOTION_BLOCKMAP_BASE,count);
     DoorInit(DOOR_DATA_BASE);
+    key_info[0]=initial_keys;
     status=0xA5;
     for(;;) {
         if(op==1){MotionFrame();DdrFlush();op=0;}

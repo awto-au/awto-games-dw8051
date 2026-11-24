@@ -22,7 +22,7 @@ int16_t motion_actor_floor;
 static int16_t grid_lx,grid_hx,grid_hy,grid_x,grid_y;
 static const uint16_t *grid_list;
 static uint16_t grid_remaining;
-static __xdata uint8_t visited[(MOTION_LINE_LIMIT+7)/8];
+static __xdata __at(MOTION_VISITED_BASE) uint8_t visited[(MOTION_LINE_LIMIT+7)/8];
 static __xdata motion_line_t current;
 int32_t finesineapprox(int16_t angle);
 int32_t finecosineapprox(int16_t angle);
@@ -246,6 +246,7 @@ static void tick(void)
     motion_state.angle+=(uint32_t)((int32_t)turn*65536L);
     ++motion_state.ticks;
     DoorTick();
+    if(exit_info[0])return;
     if(world_changed){
         MotionSectorAt(motion_state.x,motion_state.y,&centre_floor,&centre_ceiling);
         motion_state.ceiling=centre_ceiling;
@@ -265,6 +266,7 @@ static void tick(void)
 
 void MotionFrame(void)
 {
+    if(exit_info[0]){motion_state.enabled=motion_input.enabled;motion_state.frame_ticks=0;return;}
     if(!motion_input.enabled){motion_state.enabled=0;motion_state.frame_ticks=0;return;}
     motion_state.enabled=1;
     motion_state.blocked=motion_state.frame_ticks=0;
@@ -274,6 +276,6 @@ void MotionFrame(void)
         fraction-=MOTION_FRAME_HZ;
         tick();
         ++motion_state.frame_ticks;
-        if(motion_state.fault)break;
+        if(motion_state.fault || exit_info[0])break;
     }
 }

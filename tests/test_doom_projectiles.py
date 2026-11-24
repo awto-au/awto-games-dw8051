@@ -37,7 +37,7 @@ def test_native_banks_fireball_hit_and_source_death(combat_renderer,monkeypatch)
     fixture_actors(monkeypatch,[(2272,-2392,20)])  # kind zero is imp in E1M1
     commands=[{}]*29+[dict(buttons=2)]*25
     r,_=R.simulate(wad,out,initial_pose=POSE,commands=commands,frames=len(commands),latency=64,save_frames=False)
-    assert r['banking']['banks']==2 and r['bank_switches']>100 and r['bank_switches']%2==0
+    assert r['banking']['banks']==3 and r['bank_switches']>100 and r['bank_switches']%2==0
     assert r['frames'][-1]['projectiles']['stats']['spawned']>=1
     assert r['frames'][-1]['projectiles']['stats']['hits']>=1
     assert r['frames'][-1]['combat']['damage']>=10

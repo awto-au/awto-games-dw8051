@@ -1,0 +1,62 @@
+{
+  "duration_seconds": 124.47687346596695,
+  "frames": 216,
+  "maps": [
+    {
+      "map": "E1M1",
+      "start_seconds": 0,
+      "end_seconds": 14.999334521125116,
+      "frames": 24
+    },
+    {
+      "map": "E1M2",
+      "start_seconds": 14.999334521125116,
+      "end_seconds": 28.780141987679272,
+      "frames": 24
+    },
+    {
+      "map": "E1M3",
+      "start_seconds": 28.780141987679272,
+      "end_seconds": 44.80771125827057,
+      "frames": 24
+    },
+    {
+      "map": "E1M4",
+      "start_seconds": 44.80771125827057,
+      "end_seconds": 52.4011101881177,
+      "frames": 24
+    },
+    {
+      "map": "E1M5",
+      "start_seconds": 52.4011101881177,
+      "end_seconds": 69.94280010604605,
+      "frames": 24
+    },
+    {
+      "map": "E1M6",
+      "start_seconds": 69.94280010604605,
+      "end_seconds": 94.81322011112029,
+      "frames": 24
+    },
+    {
+      "map": "E1M7",
+      "start_seconds": 94.81322011112029,
+      "end_seconds": 106.69871790325294,
+      "frames": 24
+    },
+    {
+      "map": "E1M8",
+      "start_seconds": 106.69871790325294,
+      "end_seconds": 113.21204127813998,
+      "frames": 24
+    },
+    {
+      "map": "E1M9",
+      "start_seconds": 113.21204127813998,
+      "end_seconds": 124.47687346596695,
+      "frames": 24
+    }
+  ],
+  "pacing": "Native simulated CPU clocks, not a hardware measurement",
+  "source": "Converted original map packs; control input only after boot; pixels executed by native 8051"
+}

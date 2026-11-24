@@ -1,0 +1,28 @@
+E1M1 native verified
+E1M2 native verified
+E1M3 native verified
+E1M4 native verified
+E1M5 native verified
+E1M6 native verified
+E1M7 native verified
+E1M8 native verified
+E1M9 native verified
+{
+  "source_lumps": 1264,
+  "patches": 968,
+  "flats": 54,
+  "textures": 125,
+  "maps": [
+    "E1M1",
+    "E1M2",
+    "E1M3",
+    "E1M4",
+    "E1M5",
+    "E1M6",
+    "E1M7",
+    "E1M8",
+    "E1M9"
+  ],
+  "decoded_graphics": 1147,
+  "entries": 3568
+}

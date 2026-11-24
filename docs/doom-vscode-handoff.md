@@ -1,4 +1,68 @@
-# Current checkpoint: native ranged attacks and fireballs
+# Current checkpoint: complete supplied-WAD translation
+
+Updated 25 November 2026. Read [doom-translation.md](doom-translation.md) first.
+Format 10 translates all graphics and all E1M1-E1M9 map data in one command,
+with per-payload hashes, original state metadata and sparse native DDR packs.
+Native rendering now uses original floor/ceiling textures and SKY1 art. Larger
+maps load with 2,048 lines and 32 doors; Demon/Spectre/Baron art is supported.
+Play a converted map with --packed; no IWAD is needed for that prepared scene.
+Keep the complete three-bank BIN beside its matching metadata. All game/pixel
+work remains native. The original game rules and full campaign are incomplete;
+the translation report lists every retained but unsupported action/type. No
+hardware was flashed and changes remain uncommitted/unpushed. Earlier entries
+below are historical and retain their original limits and test counts.
+
+# Historical checkpoint: native normal/secret exit activation
+
+Updated 24 November 2026. Read [doom-exits.md](doom-exits.md) first.
+Format 9 adds normal/secret use exits, a native EXIT banner and latched
+completion that freezes gameplay. The recording uses original E1M1 linedef
+330 without scene edits. Use examples/doom-exit-pose.json and no --scene.
+The final suite has 199 passing tests. This checkpoint stops at completion;
+next-map loading and intermission remain future work. Keep the complete
+two-bank BIN beside its IHX, banking.json, tables.json and cache-config.json.
+The full patch includes its DDR simulator header and is checked from a clean
+base. No hardware was flashed or source committed/pushed. Functionality
+before FPS work remains the priority. Earlier checkpoints follow.
+
+# Historical checkpoint: native tagged door switches
+
+Updated 24 November 2026. Read [doom-switches.md](doom-switches.md) first.
+Format 8 adds tagged switch specials 29/63/103/61, multiple linked door targets,
+native SW1/SW2 texture changes, one-shot consumption and reusable reset.
+The final suite has 184 passing tests. The supplied explicit E1M1 test scene
+adds a switch/tag/texture before boot; all gameplay and pixels remain native.
+Use examples/doom-switch-pose.json and --scene examples/doom-switch-scene.json.
+Keep the complete two-bank BIN beside its IHX, banking.json, tables.json and
+cache-config.json. The DDR simulator header remains included in the patch.
+No hardware was flashed or source committed/pushed. Functionality before FPS.
+Earlier checkpoint details below are historical.
+
+# Historical checkpoint: native keys and coloured manual doors
+
+Updated 24 November 2026. Read [doom-keys.md](doom-keys.md) first.
+Format 7 adds persistent key inventory, coloured locks, HUD/browser feedback,
+and explicit initial test scenes. E1M1 has no original locks/keys: the supplied
+JSON adds a blue card and a lock before boot; native code handles all play.
+Use examples/doom-keys-pose.json plus --scene examples/doom-keys-scene.json.
+The final suite has 163 passing tests. The patch now includes its previously
+omitted DDR simulator header and was restored/rebuilt in a clean checkout.
+Keep the complete two-bank BIN beside its IHX, banking.json, tables.json and
+cache-config.json. No hardware was flashed or source committed/pushed.
+Functionality before FPS work remains the goal. Earlier checkpoints follow.
+
+# Historical checkpoint: native health and ammo pickups
+
+Updated 24 November 2026. Read [doom-pickups.md](doom-pickups.md) first.
+Format 6 adds original E1M1 stim packs, medikits, health bonuses, ammo clips
+and ammo boxes. Collection, caps, wall/height checks, sprite removal, HUD and
+resource changes run on the 8051. The final suite has 121 passing tests.
+Use examples/doom-pickups-pose.json and keep the complete two-bank BIN beside
+its IHX, banking.json, tables.json and cache-config.json. Source remains
+uncommitted/unpushed; no hardware was flashed. Functionality before FPS work.
+The following sections describe historical checkpoints and older limits.
+
+# Historical checkpoint: native ranged attacks and fireballs
 
 Updated 24 November 2026. Read [doom-projectiles.md](doom-projectiles.md) first.
 Soldiers shoot from range; imps throw visible balls that can be dodged and

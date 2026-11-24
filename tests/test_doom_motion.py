@@ -17,22 +17,33 @@ def motion_image(tmp_path_factory):
     return S.load_ihx(out/'platform.ihx')
 
 class Player:
-    def __init__(self,image,lines,*,floor_b=0,ceiling_b=128,x=0,y=0,angle=0,door=False,stay=False):
+    def __init__(self,image,lines,*,floor_b=0,ceiling_b=128,x=0,y=0,angle=0,door=False,stay=False,keys=0,lock=0,switch=False,repeat=False,targets=1,switch_index=0,exit_kind=0,door_count=1,block_ids=None,manual_id=1):
         self.c=F.Core(image);self.c.set_dw(json.loads(F.MODEL_JSON.read_text()));self.c.reset();self.c.set_xpage_sfr(0x92)
         self.c.set_ddr(D.config(),latency_clk=64)
         for i,line in enumerate(lines):
             line=(*line[:6],line[6]|(2 if not(line[6]&1) and (floor_b!=0 or ceiling_b!=128) else 0))
-            self.c.ddr_mem()[0x80010+i*16:0x80020+i*16]=struct.pack('<6h4B',*line,0,1,((129 if stay else 1) if door and i==0 else 0))
+            token=(((17+switch_index)|(128 if stay else 0)|(32 if repeat else 0)) if switch else ((129 if stay else 1)|(lock<<5))) if door and i==0 else 0
+            self.c.ddr_mem()[0x80010+i*16:0x80020+i*16]=struct.pack('<6h4B',*line,0,1,token)
         # Every cell references the same bounded list, stressing duplicate IDs.
-        words=[(-256)&65535,(-256)&65535,8,8]+[68]*64+[0,*range(len(lines)),65535]
+        words=[(-256)&65535,(-256)&65535,8,8]+[68]*64+[0,*(range(len(lines)) if block_ids is None else block_ids),65535]
         raw=struct.pack('<'+'H'*len(words),*words)
         self.c.ddr_mem()[0x90010:0x90010+len(raw)]=raw
         if door:
-            header=struct.pack('<HHI8x',1,1,0xA2010)
+            header=struct.pack('<HHIII',door_count,1,0xA2010,0xA4010 if switch else 0,0xA6010)
+            token=self.c.ddr_mem()[0x80010+15]
+            action=((switch_index+1)|512|(int(repeat)<<10)|(int(stay)<<8)) if switch else (manual_id|(lock<<6)|(int(stay)<<8))
+            self.c.ddr_mem()[0xA6010+token*2:0xA6012+token*2]=struct.pack('<H',action)
             definition=struct.pack('<HhhHH4h14x',1,0,124,0,1,64,80,-128,128)
-            self.c.ddr_mem()[0xA0010:0xA0010+48]=header+definition
+            self.c.ddr_mem()[0xA0010:0xA0010+16+max(1,door_count)*32]=header+definition*max(1,door_count)
             self.c.ddr_mem()[0xA2010:0xA2012]=struct.pack('<H',0)
+            if switch:
+                table=struct.pack('<H14x',switch_index+1)
+                for si in range(switch_index+1):
+                    table+=struct.pack('<IHIhhH',targets,0,0xB0010+si*2,7,8,exit_kind)
+                    self.c.ddr_mem()[0xB0010+si*2:0xB0012+si*2]=struct.pack('<h',7)
+                self.c.ddr_mem()[0xA4010:0xA4010+len(table)]=table
         self.c.xram[0xF640:0xF64A]=struct.pack('<Hhhhh',len(lines),0,floor_b,128,ceiling_b)
+        self.c.xram[0xF64A:0xF64C]=struct.pack('<H',keys)
         self.c.xram[0xF6A0:0xF6B8]=STATE.pack(x*65536,y*65536,angle,0,128,0,0,0,0,0)
         for _ in range(20):
             self.c.run(10000)

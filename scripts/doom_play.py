@@ -18,7 +18,7 @@ import doom_motion as M
 PAGE='''<!doctype html><meta charset="utf-8"><title>Native scaler walkthrough</title>
 <style>body{background:#17191c;color:#e8e8e8;font:16px system-ui;margin:24px auto;max-width:980px}img{width:100%;image-rendering:pixelated;background:black;aspect-ratio:15/8}button{font:inherit;padding:8px 20px}#status{font-variant-numeric:tabular-nums}</style>
 <h1>Native scaler walkthrough</h1><p>W/S: forward/back · A/D: strafe · arrows: turn · Space/E: use door · F/Ctrl: fire · Shift: faster</p>
-<p>Native combat prototype. Pistol, health, ammo and ground monsters work. Imps throw fireballs; soldiers fire from range. Sound is not implemented. At zero health, stop and restart the simulator.</p>
+<p>Native combat prototype. Pistol, health, ammo and ground monsters work. Imps throw fireballs; soldiers fire from range. Walk over items and keys to collect them. Coloured locks need a matching key. Space/E also operates tagged door and exit switches. Exits finish this session; next-map loading is not implemented. Sound is not implemented. At zero health, stop and restart the simulator.</p>
 <img src="/stream" alt="Native framebuffer"><p id="status">Starting simulator…</p><button id="stop">Stop</button>
 <script>const held=new Set();let stopped=false;
 const controls=new Set(['KeyW','KeyS','KeyA','KeyD','ArrowLeft','ArrowRight','Space','KeyE','ShiftLeft','ShiftRight','KeyF','ControlLeft','ControlRight']);
@@ -27,7 +27,7 @@ async function send(){if(!stopped)try{await fetch('/input',{method:'POST',header
 onkeydown=e=>{if(controls.has(e.code)){e.preventDefault();held.add(e.code);send();}};
 onkeyup=e=>{if(controls.has(e.code)){e.preventDefault();held.delete(e.code);send();}};
 onblur=()=>{held.clear();send();};document.onvisibilitychange=()=>{if(document.hidden){held.clear();send();}};
-setInterval(send,100);setInterval(async()=>{if(stopped)return;try{let s=await(await fetch('/state')).json();if(s.frame!==undefined)document.getElementById('status').textContent=`Frame ${s.frame} · CPU-model frame ${s.model_ms.toFixed(1)} ms · use activations ${s.doors.activations}${s.combat ? ` · Health ${s.combat.health} · Ammo ${s.combat.ammo} · Kills ${s.combat.kills}${s.combat.dead ? ' · DEAD' : ''}` : ''}`;}catch(e){}},250);
+setInterval(send,100);setInterval(async()=>{if(stopped)return;try{let s=await(await fetch('/state')).json();if(s.frame!==undefined)document.getElementById('status').textContent=`Frame ${s.frame} · CPU-model frame ${s.model_ms.toFixed(1)} ms · use activations ${s.doors.activations}${s.combat ? ` · Health ${s.combat.health} · Ammo ${s.combat.ammo} · Kills ${s.combat.kills}${s.combat.dead ? ' · DEAD' : ''}` : ''}${s.pickups ? ` · Pickups ${s.pickups.stats.collected}` : ''}${s.switches ? ` · Switches ${s.switches.stats.activations}` : ''}${s.exit && s.exit.kind ? ` · LEVEL COMPLETE${s.exit.kind===2 ? ' (secret exit)' : ''}` : ''}${s.inventory ? ` · Keys ${[[9,'blue'],[18,'yellow'],[36,'red']].filter(([mask])=>s.inventory.keys&mask).map(([,name])=>name).join(', ')||'none'}${s.inventory.notice ? ` · Need ${['','blue','yellow','','red'][s.inventory.needed]} key` : ''}` : ''}`;}catch(e){}},250);
 document.getElementById('stop').onclick=async()=>{held.clear();await send();stopped=true;try{await fetch('/stop',{method:'POST'});}catch(e){}document.getElementById('status').textContent='Stopped';};</script>'''
 
 class PlaySession:
@@ -95,15 +95,18 @@ def make_server(session,port=8099):
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--out',type=Path,required=True,help='existing doom_renderer build directory')
-    p.add_argument('--wad',type=Path,required=True);p.add_argument('--pose',type=Path);p.add_argument('--port',type=int,default=8099)
+    p.add_argument('--wad',type=Path);p.add_argument('--packed',type=Path);p.add_argument('--map',default='E1M1');p.add_argument('--pose',type=Path);p.add_argument('--port',type=int,default=8099)
     p.add_argument('--frames',type=int,default=65535);p.add_argument('--latency',type=int,default=64)
-    a=p.parse_args();session=PlaySession();server=make_server(session,a.port)
+    p.add_argument('--scene',type=Path,help='initial demonstration edits')
+    a=p.parse_args()
+    if not a.wad and not a.packed:p.error('provide --wad or --packed')
+    session=PlaySession();server=make_server(session,a.port)
     threading.Thread(target=server.serve_forever,daemon=True).start()
     print(f'Keyboard preview http://127.0.0.1:{server.server_port}/',flush=True)
     print(f'VLC stream http://127.0.0.1:{server.server_port}/stream',flush=True)
     try:
-        R.simulate(a.wad,a.out,frames=a.frames,initial_pose=json.loads(a.pose.read_text()) if a.pose else None,
-                   input_provider=session.command,on_frame=session.frame,save_frames=False,latency=a.latency)
+        R.simulate(a.wad,a.out,mapname=a.map,packed=a.packed,frames=a.frames,initial_pose=json.loads(a.pose.read_text()) if a.pose else None,
+                   input_provider=session.command,on_frame=session.frame,save_frames=False,latency=a.latency,scene=json.loads(a.scene.read_text()) if a.scene else None)
     except KeyboardInterrupt:pass
     finally:
         session.stop.set()
