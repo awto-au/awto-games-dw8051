@@ -1,0 +1,3 @@
+[submodule "ddc"]
+	path = ddc
+	url = https://github.com/awto-au/awto-ddc.git

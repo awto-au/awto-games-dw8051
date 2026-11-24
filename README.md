@@ -71,6 +71,14 @@ for setup, current format requirements and next gameplay checkpoints.
 - Registered Doom / Doom II WADs (only the shareware `wads/doom1.wad` is included).
 - Asteroids / Pac-Man ROM data: never committed; builds fall back to hand-made shapes.
 
+## awto-ddc submodule
+
+- `ddc/` = awto-ddc (scaler firmware platform: SDK build, bank layout, audio player, flash tools), pinned at 28e1196f (extra source root + app hooks, awto-au/awto-ddc#345).
+- Clone: `git clone --recurse-submodules https://github.com/awto-au/awto-games-dw8051.git`; existing clone: `git submodule update --init`.
+- Env for the host tools: `AWTO_DDC_REPO=$PWD/ddc`, `AWTO_DDC_SCRIPTS=$PWD/ddc/scripts`.
+- Arcade image (Doom + games) builds with `ddc/dev.py build --extra-fw <this repo's fw dir>`; game adapters (`AWTO_APP`) and the bank budget are still to do (ddc/docs/extra-apps.md).
+- Bump the pin on purpose: `git -C ddc fetch && git -C ddc checkout <commit>`, then commit `ddc`.
+
 ## Licence
 
 - Repo: GPL-2.0 (`LICENSE`); the renderer derives from Doom8088 (GPL v2, `fw/doom/vendor/Doom8088/`, upstream https://github.com/FrenkelS/Doom8088).
