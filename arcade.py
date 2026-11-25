@@ -21,6 +21,7 @@ DDC = ROOT / "ddc"
 SCRIPTS = ROOT / "scripts"
 EXTRA_FW = ROOT / "fw/games"
 TAG = "arcade"
+APP_MODULES = ["pacman_classic", "asteroids", "scope_saver2", "arcade_snd", "saver_canvas", "apps"]     # compiled modules of the arcade apps + the awto-ddc hook framework
 LOG = ROOT / "tmp/logs/arcade.log"
 BUILD_STALL_S = 60          # no output line for this long = hung (global rule: host build stall guard); first compile line ~ 10 s
 
@@ -60,26 +61,41 @@ def run(cmd: list, cwd: Path) -> int:
     return p.returncode
 
 
-def cmd_build() -> int:
+def save_modules() -> None:
+    """tmp/arcade_modules.tsv: module <TAB> chunk name from the post-bank asm of the build that just ran (the next build overwrites it)."""
+    import re
+    rows = []
+    for m in APP_MODULES:
+        asm = DDC / "tmp/sdcc-port/asm_bank" / f"{m}.asm"
+        rows += [f"{m}\t{c[2:]}\n" for c in re.findall(r"^\s*\.area (CH\S+)", asm.read_text(errors="replace"), re.MULTILINE)]
+    (ROOT / "tmp/arcade_modules.tsv").write_text("".join(rows))
+
+
+def cmd_build(release: bool = False) -> int:
     if not (DDC / "dev.py").is_file():
         say("ddc/ is empty: git submodule update --init ddc")
         return 1
     rc = run([sys.executable, str(SCRIPTS / "gen_asteroids.py"), "--fallback"], ROOT)     # shapes: own outlines, never ROM data
     if rc:
         return rc
-    return run([sys.executable, str(DDC / "dev.py"), "build", "--extra-fw", str(EXTRA_FW), "--tag", TAG], DDC)
+    cmd = [sys.executable, str(DDC / "dev.py"), "build", "--extra-fw", str(EXTRA_FW), "--tag", TAG + ("-rel" if release else "")]
+    rc = run(cmd + (["--layout", "release"] if release else []), DDC)
+    if rc == 0 and not release:
+        save_modules()
+    return rc
 
 
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = ap.add_subparsers(dest="cmd", required=True)
-    sub.add_parser("build")
+    b = sub.add_parser("build")
+    b.add_argument("--release", action="store_true", help="release layout (fewest banks), tag arcade-rel: the numbers for the Doom bank plan")
     s = sub.add_parser("sim")
     s.add_argument("--game", default="")
     sub.add_parser("budget")
     a, rest = ap.parse_known_args()
     if a.cmd == "build":
-        return cmd_build()
+        return cmd_build(a.release)
     mod = {"sim": "arcade_sim.py", "budget": "arcade_budget.py"}[a.cmd]
     extra = ["--game", a.game] if a.cmd == "sim" and a.game else []
     return run([sys.executable, str(SCRIPTS / mod), *extra, *rest], ROOT)

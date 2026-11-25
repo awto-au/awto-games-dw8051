@@ -35,7 +35,7 @@
 #define AWTO_PS_OFF_BOOM_SHIP 546
 #define AWTO_PS_LOOP_BOOM_SHIP 0
 #define AWTO_PS_BYTES 604
-#pragma place bank(13)                      // data, tables and their reader (SndByte) share the bank
+#pragma place bank(10)                      // data, tables and their reader (SndByte) share the bank
 #define AWTO_PS_TRK 604                       // track table after the note data: {offset lo, offset hi, priority, loops} per track
 #define AWTO_PS_CMD 672                       // cmd table after it: {track, 0, 1 = event value is the cmd} per cmd
 #define AWTO_PS_TRACKS 17

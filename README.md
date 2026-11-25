@@ -10,6 +10,7 @@ Read `docs/doom-translation.md`, then `docs/doom-vscode-handoff.md`. Original do
 - `verify_download.py` + `download-manifest.json`: SHA-256 check of every file from the download (paths are repo-relative).
 - `artifacts/`: now also exit/fireball/keys/pickup/switch baselines; `current/` is the format-10 three-bank image (196,608 B BIN). The previous `current/` is `artifacts/fireball-baseline/`.
 - `docs/checkpoints/`: per-checkpoint READMEs (newest: `translated/PROJECT_README.md`).
+- Arcade image (`adapters`): Pac-Man, Asteroids, Scope 2 as awto-ddc apps, `./arcade.py build|sim|budget`, bank budget `docs/arcade-budget.tsv`, plan for Doom in the same flash in `docs/arcade-image.md`.
 - Tests: `AWTO_DOOM_WAD=wads/doom1.wad pytest tests/test_doom_*.py`. SDCC tests need `AWTO_DOOM_SDCC`, `AWTO_DOOM_LINKER`, `AWTO_DOOM_LIB_*`. A few tests need awto-ddc files (`scripts/dw8051_model.json`, `fw/sdk` headers) until the awto-ddc submodule lands (awto-au/awto-ddc#345).
 
 ## Earlier checkpoint: soldier shots and imp fireballs (24 Nov 2026)

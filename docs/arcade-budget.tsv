@@ -1,0 +1,34 @@
+scope	name	bank	code	const	stub	total	capacity	free	note
+game	pacman	6	2183	41601	24	43808			pinned bank 6; local stubs in bank 13; modules pacman_classic; 25 chunks
+game	asteroids	8	15279	926	24	16229			pinned bank 8; local stubs in bank 13; modules asteroids; 59 chunks
+game	scope2	10	5495	3478	16	8989			pinned bank 10; local stubs in bank 13; modules scope_saver2; 27 chunks
+game	sound	10	873	811	80	1764			pinned bank 10; local stubs in bank 6+8; modules arcade_snd; 13 chunks
+game	canvas	12	977	0	32	1009			pinned bank none (floats); local stubs in bank 8+13; modules saver_canvas; 5 chunks
+game	apps	13	1071	0	72	1143			pinned bank none (floats); local stubs in bank 5+6+8+10+12; modules apps; 14 chunks
+bank	bank 0	0	40940	14	776	41730	55296	13566	base 41730; release 55143
+bank	bank 1	1	40266	0	280	40546	55296	14750	base 40546; release 55240
+bank	bank 2	2	41162	168	616	41946	55296	13350	base 41946; release 55087
+bank	bank 3	3	37320	4398	320	42038	55296	13258	base 42038; release 51052
+bank	bank 4	4	40543	62	192	40797	55296	14499	base 40797; release 48520
+bank	bank 5	5	40214	711	896	41821	55296	13475	base 41797; release 54607; games: apps 24
+bank	bank 6	6	3854	44215	192	48261	55296	7035	base 4357; release 46012; games: pacman 43784, sound 40, apps 8
+bank	bank 7	7	33583	9339	224	43146	55296	12150	base 43146; release 50180
+bank	bank 8	8	19949	28990	184	49123	55296	6173	base 32798; release 41552; games: asteroids 16205, sound 40, canvas 24, apps 8
+bank	bank 9	9	20516	8105	320	28941	47104	18163	base 28924; release 45335; msg block reserved
+bank	bank 10	10	7004	31065	104	38173	55296	17123	base 27420; release 11058; games: scope2 8973, sound 1684, apps 16
+bank	bank 11	11	35745	3706	80	39531	55296	15765	base 39531; release 0
+bank	bank 12	12	29545	3766	56	33367	55296	21929	base 32366; release 0; games: canvas 977, apps 16
+bank	bank 13	13	28165	1395	3312	32872	55296	22424	base 31705; release 0; games: apps 1071, pacman 24, asteroids 24, scope2 16, canvas 8
+bank	bank 14	14	31133	12963	904	45000	55296	10296	base 45000; release 0
+xdata	pacman					10			pacman_classic slot 10 B in hole 0xd700
+xdata	asteroids					515			asteroids slot 515 B in hole 0xe780
+xdata	scope2					188			scope_saver2 slot 188 B in hole 0xe780
+xdata	sound					10			arcade_snd slot 10 B in hole 0xd700
+xdata	canvas					228			saver_canvas slot 228 B in hole 0xe780
+xdata	apps					9			apps slot 9 B in hole 0xd700
+xdata	pool					6689	6975	286	free in the image; base free 1249
+xdata	window					113		3807	XDATA window 0xE780..0xF6D0 (fw_ram_report)
+iram	direct					123		5	free direct IRAM; stack 128 B; iseg 0
+doom	image	3				196608			3 banks of 65536 B; non-0xFF per bank [64549, 64512, 64558]; common_end 20480, overlay 20480..26237
+doom	unique					78310			bank 0 non-0xFF 64549 + bytes differing from bank 0 in banks 1..2: [5654, 8107]
+doom	release_fit	11..13					15	1	arcade release image ends with bank 10 (11 banks); Doom in banks 11..13; free = code banks 15 - 11 - 3; bank 15 = NVRAM / manifest

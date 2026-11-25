@@ -28,7 +28,7 @@
 #define ARC_SND_RESYNC_MS                       125                 // a note later than this behind its schedule restarts the schedule (a long pass: no burst of notes)
 #include "arcade_snd_data.inc"
 
-#pragma place bank(13)
+#pragma place bank(10)
 static BYTE SndByte(WORD usIdx)
 {
     return g_aucArcSndData[usIdx];
