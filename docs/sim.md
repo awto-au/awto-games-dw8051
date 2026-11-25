@@ -21,15 +21,17 @@ Status 2026-11-17. The only simulator is ours; no ucsim in any flow except the c
 ## MCU DDR and raster capture
 
 The fast core now models the `MCU_DC_*` registers natively, with **32 MiB of
-separate backing RAM**. Firmware uses real MOVX instructions and the same DDR
+separate backing RAM** (one RAM for both ports; hardware has one 32 MiB chip per
+port, #5). Firmware uses real MOVX instructions and the same DDR
 commands as the monitor; DDR is not added to the CPU's 64 KiB XDATA space.
 The RAM and pending transactions are included in simulator snapshots.
 See [sim-ddr.md](sim-ddr.md) for measured facts, assumptions and tests.
 
 `sim_live.py IMAGE.bin IMAGE.map --ddr 160x100` streams a BGR888 DDR raster
 through the existing VLC MJPEG endpoint. `--ddr-base` and `--ddr-pitch` are byte
-addresses/strides; `--ddr-line-repeat 2` reproduces the measured UHD block-1
-vertical doubling. This explicit raster view does not simulate scaler output.
+addresses/strides; `--ddr-line-repeat 2` stretches UHD block 1 to screen height; on
+hardware block 1 (chip A) is the even rows only, odd rows come from chip B
+(E/O capture, awto-ddc#348). This explicit raster view does not simulate scaler output.
 
 ## Recipes
 

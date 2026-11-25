@@ -113,7 +113,7 @@ def main():
     ap.add_argument("--ddr", type=raster_geometry, metavar="WIDTHxHEIGHT", help="capture the DDR BGR888 raster, not the OSD")
     ap.add_argument("--ddr-base", type=lambda s: int(s, 0), default=0, help="raster base BYTE address")
     ap.add_argument("--ddr-pitch", type=int, default=None, help="row pitch in bytes (default width*3)")
-    ap.add_argument("--ddr-line-repeat", type=int, default=1, help="repeat each memory row (2 for the measured UHD block-1 layout)")
+    ap.add_argument("--ddr-line-repeat", type=int, default=1, help="repeat each memory row (2 = UHD block 1 stretched; hardware shows it on even rows only)")
     a = ap.parse_args()
     a.out.mkdir(parents=True, exist_ok=True)
     cmd = a.out / "cmd.txt"

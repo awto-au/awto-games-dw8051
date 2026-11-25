@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
-"""RTD2795T MCU_DC DDR interface for FastMachine, backed by 32 MiB.
+"""RTD2795T MCU_DC DDR interface for FastMachine, backed by 32 MiB (one chip).
 
 Transport runs in mcs51_core.c (mcs51_ddr.h), including snapshot/restore.
 Addresses: re/regdb/RTD2795T-CG.tsv.gz. Lane order/masks/capacity:
 docs/ddr-draw.md, hardware #255/#267. Command latency defaults to ideal (zero
 additional clocks), NOT a calibrated hardware speed model. Unsupported burst
 lengths/reserved commands stay busy; reset clears the transaction, not RAM.
-Both ports share logical RAM; port B's lane mapping is an unverified assumption.
+Hardware: port A = chip A, port B = chip B, 32 MiB each (awto-ddc#348, docs/ddr-map.md).
+This model backs both ports with ONE RAM (wrong for B: #5); B lanes unverified.
 """
 from __future__ import annotations
 

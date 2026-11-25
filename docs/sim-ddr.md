@@ -7,14 +7,14 @@ FastMachine enables it by default; `AWTO_SIM_DDR=off` disables it.
 
 | Behaviour | Basis |
 |---|---|
-| 32 MiB accessible address space, wraps at 2^22 eight-byte units | Measured on unit 2, 2026-11-20, #267; physical capacity may be greater |
+| 32 MiB accessible address space, wraps at 2^22 eight-byte units | Measured on port A, unit 2, 2026-11-20, awto-ddc#267; = one chip (hardware has two, awto-ddc#348) |
 | Two-unit/16-byte commands, write 100, read 101 in CMD[7:5] | Regdb and hardware |
 | CMD clears to NOP at completion | Regdb qack description |
 | Read buffer halves swapped; write buffer halves swapped | Hardware #255/#267 |
 | Mask bit 1 preserves that write-buffer byte's memory lane | Hardware masktest, #267 |
 | READ_FLAG cleared by any data-buffer read; data/flag read-only | Regdb |
 | LEN 1/4 hangs; unsupported lengths/reserved commands stay busy | LEN 1/4 measured on A; extension to other unsupported values is a conservative model policy |
-| A and B share logical backing RAM and lane convention | Model assumption; B mapping not hardware-verified |
+| A and B share one backing RAM and lane convention | Model only, wrong for RAM: hardware port A = chip A, port B = chip B (awto-ddc#348; fix #5); B lanes not hardware-verified |
 | In-flight writes to transaction registers ignored and counted | Model policy to expose driver hazards; not a measured silicon response |
 | RAM retained across CPU reset, in-flight command cancelled | Model policy; no DRAM power-cycle model |
 

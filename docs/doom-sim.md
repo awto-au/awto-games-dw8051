@@ -82,7 +82,8 @@ python scripts/sim_live.py IMAGE.bin IMAGE.map --ddr 160x100 --port 8099
 vlc http://127.0.0.1:8099/stream
 ```
 
-For the measured UHD block-1 layout use `--ddr 3840x1080 --ddr-line-repeat 2`.
+For UHD block 1 (chip A = even screen rows; odd rows are chip B, awto-ddc#348) use
+`--ddr 3840x1080 --ddr-line-repeat 2` (stretched view).
 `--ddr-base` and `--ddr-pitch` specify byte addresses/strides. This deliberately
 does not model scaler scanout, HDMI capture, scaling or double/triple buffering.
 
