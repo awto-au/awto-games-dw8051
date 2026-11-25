@@ -41,7 +41,7 @@ def test_fallback_rocks_closed_and_ship_tip_turns_a_quarter():
 
 def test_inc_text_defines_match_c_use():
     text, n = G.inc_text(shapes(), "fallback")
-    for name in ("AWTO_AST_FROM_ROM", "AWTO_AST_SH_ROCK0", "AWTO_AST_SH_SAUCER", "AWTO_AST_SH_HULL", "AWTO_AST_SH_FLAME", "AWTO_AST_SH_DIGIT"):
+    for name in ("AWTO_AST_SH_ROCK0", "AWTO_AST_SH_SAUCER", "AWTO_AST_SH_HULL", "AWTO_AST_SH_FLAME", "AWTO_AST_SH_DIGIT"):
         assert name in text and name in C_SRC
     assert "#define AWTO_AST_FROM_ROM 0" in text and f"#define AWTO_AST_DATA_BYTES {n}" in text
 

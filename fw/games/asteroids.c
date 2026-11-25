@@ -1,18 +1,18 @@
 #include <stdint.h>
 #include <string.h>
 #include "UserCommonInclude.h"
-#if(_AWTO_SAVER_ASTEROIDS == _ON)                                        // saver not in the image when _OFF (RL6449_Project.h)
-#include "../../tools/osd_lines/osd_lines.h"
+#include "AwtoApps.h"
+#include "../../ddc/tools/osd_lines/osd_lines.h"
+#include "arcade.h"
 
 // Asteroids screensaver (docs/asteroids.md): the game runs on the chip (rocks split, shots, saucer, autopilot ship, wrap-around),
 // drawn like Scope 2: 30 x 11 tiles of 12 x 18 (360 x 198), 1-bit glyphs, one-tile-column band canvas of saver_canvas.c,
 // objects culled per pass; only the tiles under objects that moved / changed are redrawn and uploaded (docs/saver-fps-plan.md). Game ticks at column 0.
-//   AwtoAsteroids(1) draw   (2) next column, returns 1 when a frame is complete   (0) off
+//   AwtoAsteroids(1) draw   (2) next column, returns 1 when a frame is complete   (0) off; the app hooks at the end call these
 // Shapes: asteroids_data.inc (scripts/gen_asteroids.py: local ROM geometry or own outlines; gitignored).
 extern __xdata uint8_t g_aucScPix[];
 extern __xdata uint8_t g_aucScDirty[];
 extern __xdata osd_canvas g_scCv;
-extern void AwtoScTile(WORD usAddr, BYTE __xdata *pucB);                          // direct data port stores (saver_canvas.c)
 #define AWTO_AST_TILE(c, p)                     AwtoScTile(AWTO_AST_ROWS + 1 + AWTO_AST_COLS * AWTO_AST_ROWS + (OSD_TILE_BYTES / 3) * ((g_ucAwtoOsdRot != 0) ? AwtoOsdRotCell((c), AWTO_AST_COLS * AWTO_AST_ROWS) : (c)), (p))
 #include "asteroids_data.inc"
 
@@ -55,9 +55,6 @@ typedef BYTE AstY;
 #endif
 typedef char s_tAstPanelCheck[((AWTO_AST_SU_FACTOR * (long)_PANEL_DH_WIDTH == AWTO_AST_SCALED_W) && (AWTO_AST_SCALED_H / AWTO_AST_SU_FACTOR <= _PANEL_DV_HEIGHT) &&
                                (((_PANEL_DV_HEIGHT - AWTO_AST_SCALED_H / AWTO_AST_SU_FACTOR) % 2) == 0 || AWTO_AST_ODD_BAR_OK)) ? 1 : -1];   // full width, height inside the panel, even bars
-#define AWTO_AST_ARG_ON                         0x90                                // sync E9 (no rows: the table is full): value = shape source (AWTO_AST_FROM_ROM)
-#define AWTO_AST_ARG_FRAME                      0x91
-#define AWTO_AST_ARG_OFF                        0x92
 
 // game units: 1/8 px
 #define AWTO_AST_FP                             3
@@ -287,6 +284,7 @@ static __xdata int16_t s_sClip0;
 
 #pragma place bank(8)
 static __code int8_t s_tCos[AWTO_AST_QUARTER + 1] = {127, 126, 125, 122, 117, 112, 106, 98, 90, 81, 71, 60, 49, 37, 25, 12, 0};
+#pragma place bank(8)
 static BYTE AstRad(BYTE ucT)                                                        // draw radius, px (no table: a const chunk near the top of a bank trips the link gate's arithmetic-base heuristic)
 {
     switch(ucT)
@@ -309,6 +307,7 @@ static BYTE AstRad(BYTE ucT)                                                    
     }
 }
 
+#pragma place bank(8)
 static BYTE AstHit(BYTE ucT)                                                        // hit radius, px
 {
     switch(ucT)
@@ -361,6 +360,7 @@ static void AstDir(BYTE ucAng)
     }
 }
 
+#pragma place bank(8)
 static BYTE AstRnd(void)
 {
     s_usRng ^= (WORD)(s_usRng << 7);
@@ -369,24 +369,28 @@ static BYTE AstRnd(void)
     return (BYTE)(s_usRng >> 4);
 }
 
+#pragma place bank(8)
 static void AstSnd(BYTE ucCmd)
 {
     if(GET_OSD_VOLUME_MUTE() == 0)                                                  // muted by the user: silent (volume = the user's DVC gain)
     {
-        AwtoPmSound(ucCmd);
+        ArcSnd(ucCmd);
     }
 }
 
+#pragma place bank(8)
 static void AstBg(BYTE ucState)
 {
-    AwtoPmSoundBg((GET_OSD_VOLUME_MUTE() == 0) ? ucState : AWTO_AST_BG_NONE);
+    ArcSndBg((GET_OSD_VOLUME_MUTE() == 0) ? ucState : AWTO_AST_BG_NONE);
 }
 
+#pragma place bank(8)
 static void AstPoll(void)                                                           // the sound sequencer is served between drawing steps, not once per 10-40 ms pass (docs/pacman-sound.md "Timing")
 {
-    AwtoPmSoundPoll();
+    ArcSndPoll();
 }
 
+#pragma place bank(8)
 static int16_t AstDiff(int16_t sD, int16_t sM)                                      // shortest signed difference on a ring of sM
 {
     if(sD > (sM / 2))
@@ -400,6 +404,7 @@ static int16_t AstDiff(int16_t sD, int16_t sM)                                  
     return sD;
 }
 
+#pragma place bank(8)
 static BYTE AstNear(int16_t sAx, int16_t sAy, int16_t sBx, int16_t sBy, BYTE ucSum)    // toroidal distance in px below ucSum
 {
     int16_t sDx = AstDiff(sAx - sBx, AWTO_AST_FPW) >> AWTO_AST_FP;
@@ -420,6 +425,7 @@ static BYTE AstNear(int16_t sAx, int16_t sAy, int16_t sBx, int16_t sBy, BYTE ucS
     return ((WORD)(sDx * sDx) + (WORD)(sDy * sDy)) < (WORD)((WORD)ucSum * ucSum);
 }
 
+#pragma place bank(8)
 static BYTE AstAlloc(void)
 {
     BYTE ucI;
@@ -434,6 +440,7 @@ static BYTE AstAlloc(void)
     return AWTO_AST_NONE;
 }
 
+#pragma place bank(8)
 static BYTE AstAdd(BYTE ucType, int16_t sX, int16_t sY, int8_t cVx, int8_t cVy, BYTE ucAux)    // the slot, or AWTO_AST_NONE when the pool is full
 {
     BYTE ucI = AstAlloc();
@@ -450,6 +457,7 @@ static BYTE AstAdd(BYTE ucType, int16_t sX, int16_t sY, int8_t cVx, int8_t cVy, 
     return ucI;
 }
 
+#pragma place bank(8)
 static void AstRockVel(BYTE ucType, BYTE ucSlot)                                    // random heading, speed by size
 {
     BYTE ucSpeed = (BYTE)((AstRnd() & 7) + 5 + (ucType - AWTO_AST_T_ROCK_L) * 5);
@@ -459,11 +467,13 @@ static void AstRockVel(BYTE ucType, BYTE ucSlot)                                
     s_atObj[ucSlot].cVy = (int8_t)(((int16_t)s_cDy * ucSpeed) >> 7);
 }
 
+#pragma place bank(8)
 static void AstBoom(int16_t sX, int16_t sY, BYTE ucSize)
 {
     AstAdd(AWTO_AST_T_BOOM, sX, sY, (int8_t)ucSize, 0, 0);
 }
 
+#pragma place bank(8)
 static BYTE AstBoomSnd(BYTE ucT)
 {
     if(ucT == AWTO_AST_T_ROCK_L)
@@ -473,6 +483,7 @@ static BYTE AstBoomSnd(BYTE ucT)
     return (ucT == AWTO_AST_T_ROCK_S) ? AWTO_AST_SND_BOOM_S : AWTO_AST_SND_BOOM_M;
 }
 
+#pragma place bank(8)
 static void AstBreak(BYTE ucI)                                                      // a rock or saucer is destroyed: score, children, boom
 {
     BYTE ucT = s_atObj[ucI].ucType;
@@ -513,6 +524,7 @@ static void AstBreak(BYTE ucI)                                                  
     AstBoom(sX, sY, AstRad(ucT) - 1);
 }
 
+#pragma place bank(8)
 static void AstShipDie(void)
 {
     AstBoom(s_sShX, s_sShY, AWTO_AST_BOOM_SHIP_SIZE);
@@ -531,6 +543,7 @@ static void AstShipDie(void)
     }
 }
 
+#pragma place bank(8)
 static void AstNewWave(void)
 {
     BYTE ucN = AWTO_AST_WAVE_ROCKS + s_ucWave;
@@ -561,6 +574,7 @@ static void AstNewWave(void)
     }
 }
 
+#pragma place bank(8)
 static void AstNewGame(void)
 {
     BYTE ucI;
@@ -579,6 +593,7 @@ static void AstNewGame(void)
     AstNewWave();
 }
 
+#pragma place bank(8)
 static void AstShoot(BYTE ucType, int16_t sX, int16_t sY, BYTE ucAng, BYTE ucSpeed, int16_t sVx0, int16_t sVy0)
 {
     BYTE ucTtl = (ucType == AWTO_AST_T_SHOT) ? AWTO_AST_SHOT_TTL : AWTO_AST_SSHOT_TTL;
@@ -588,6 +603,7 @@ static void AstShoot(BYTE ucType, int16_t sX, int16_t sY, BYTE ucAng, BYTE ucSpe
            (int8_t)((((int16_t)s_cDx * ucSpeed) >> 7) + sVx0), (int8_t)((((int16_t)s_cDy * ucSpeed) >> 7) + sVy0), ucTtl);
 }
 
+#pragma place bank(8)
 static BYTE AstCount(BYTE ucFirst, BYTE ucLast)                                     // live objects with a type in the range
 {
     BYTE ucI;
@@ -603,6 +619,7 @@ static BYTE AstCount(BYTE ucFirst, BYTE ucLast)                                 
     return ucN;
 }
 
+#pragma place bank(8)
 static void AstShipThink(void)                                                      // autopilot: nearest rock / saucer, lead, turn, fire, wander
 {
     BYTE ucI;
@@ -685,6 +702,7 @@ static void AstShipThink(void)                                                  
     }
 }
 
+#pragma place bank(8)
 static int8_t AstClampV(int16_t sV)
 {
     if(sV > AWTO_AST_VMAX)
@@ -698,6 +716,7 @@ static int8_t AstClampV(int16_t sV)
     return (int8_t)sV;
 }
 
+#pragma place bank(8)
 static void AstShipMove(void)
 {
     if(s_ucShThrust != 0)
@@ -731,6 +750,7 @@ static void AstShipMove(void)
     }
 }
 
+#pragma place bank(8)
 static void AstSaucerAct(BYTE ucI)                                                  // course change and shots
 {
     BYTE ucAng;
@@ -770,6 +790,7 @@ static void AstSaucerAct(BYTE ucI)                                              
     AstShoot(AWTO_AST_T_SSHOT, s_atObj[ucI].sX, s_atObj[ucI].sY, ucAng, AWTO_AST_SSHOT_SPEED, 0, 0);
 }
 
+#pragma place bank(8)
 static void AstMove(void)
 {
     BYTE ucI;
@@ -830,6 +851,7 @@ static void AstMove(void)
     }
 }
 
+#pragma place bank(8)
 static void AstCollide(void)
 {
     BYTE ucI;
@@ -883,6 +905,7 @@ static void AstCollide(void)
     }
 }
 
+#pragma place bank(8)
 static void AstSpawnSaucer(void)
 {
     BYTE ucSmall = (BYTE)((AstRnd() % 100) < AWTO_AST_SAUCER_SMALL_PCT);
@@ -893,6 +916,7 @@ static void AstSpawnSaucer(void)
     AstAdd(ucSmall ? AWTO_AST_T_SAUCER_S : AWTO_AST_T_SAUCER_L, ucRight ? (AWTO_AST_FPW - 1) : 0, sY, ucRight ? (int8_t)-cV : cV, 0, AWTO_AST_SAUCER_FIRE);
 }
 
+#pragma place bank(8)
 static void AstWorld(void)                                                          // waves, saucers, respawn, game over, sound state
 {
     BYTE ucI;
@@ -968,6 +992,7 @@ static void AstWorld(void)                                                      
     AstBg(ucBg);
 }
 
+#pragma place bank(8)
 static void AstDigits(void)
 {
     WORD usV = s_usScore;
@@ -985,6 +1010,7 @@ static void AstDigits(void)
     }
 }
 
+#pragma place bank(8)
 static void AstTick(void)
 {
     g_usAwtoAstStep++;
@@ -1001,6 +1027,7 @@ static void AstTick(void)
     AstWorld();
 }
 
+#pragma place bank(8)
 static BYTE AstDue(void)                                                            // game ticks due now (0..AWTO_AST_MAX_CATCHUP), the schedule advanced by their periods
 {
     BYTE ucN = 0;
@@ -1022,6 +1049,7 @@ static BYTE AstDue(void)                                                        
     return ucN;
 }
 
+#pragma place bank(8)
 static void AstStep(BYTE ucTicks)                                                   // the frame's game ticks, then the HUD numbers
 {
     BYTE ucK;
@@ -1185,7 +1213,7 @@ static void AstShape(BYTE ucShape, BYTE ucShift, BYTE ucRot)                    
     }
 }
 
-#pragma place bank(8)                                                               // the draw path shares one bank (no trampoline per call) and keeps bank 13 free
+#pragma place bank(8)                                                       // all of Asteroids in one bank
 static BYTE AstCull(int16_t sPx, int16_t sPy, BYTE ucR)                             // object centre (playfield px) -> s_sRx / s_sRy; 0 when it misses the pass
 {
     __data int16_t sT = sPx - s_sOx + ucR;
@@ -1498,6 +1526,7 @@ static __xdata BYTE s_ucInfoHz;                                                 
 static __xdata WORD s_usInfoFrac;
 static __xdata WORD s_usInfoSum;                                                    // checksum of the shown input values: a change redraws
 
+#pragma place bank(8)
 static BYTE AstPutDec(BYTE __xdata *pucL, BYTE ucPos, WORD usV, BYTE ucMin)         // decimal digits (at least ucMin) at ucPos; returns the next position; subtraction per digit: no 16-bit divide
 {
     WORD usD;
@@ -1521,6 +1550,7 @@ static BYTE AstPutDec(BYTE __xdata *pucL, BYTE ucPos, WORD usV, BYTE ucMin)     
     return ucPos;
 }
 
+#pragma place bank(8)
 static void AstInfoLine(BYTE __xdata *pucL, BYTE ucLine)                            // glyph ids of one line (AWTO_AST_CH_SPACE = blank)
 {
     BYTE ucP;
@@ -1557,6 +1587,7 @@ static void AstInfoLine(BYTE __xdata *pucL, BYTE ucLine)                        
     }
 }
 
+#pragma place bank(8)
 static void AstInfoTick(WORD usNow)                                                 // once per AWTO_AST_INFO_PERIOD_MS: frames drawn since the last refresh = fps; marks the tiles when a value changed
 {
     WORD usSum = 0;
@@ -1645,7 +1676,7 @@ static void AstPass(BYTE ucCol, BYTE ucBand)                                    
         return;
     }
     s_aucDirty[ucIdx] = 0;
-    AWTO_XFR(AWTO_R_WATCHDOG_TIMER) |= AWTO_F_WATCHDOG_TIMER_CLR_WDT;
+    AwtoAppFeed();
     s_sOx = (int16_t)(((WORD)ucCol << AWTO_AST_BYTE_BITS) + ((WORD)ucCol << AWTO_AST_DIV_TW_SHIFT));   // ucCol * 12, no multiply
 #if(AWTO_AST_BANDS == 2)
     s_sOy = (ucBand == 0) ? 0 : AWTO_AST_BAND_H;
@@ -1701,16 +1732,15 @@ static void AstPass(BYTE ucCol, BYTE ucBand)                                    
     }
 }
 
-BYTE AwtoAsteroids(BYTE ucCmd)
+#pragma place bank(8)
+static BYTE AwtoAsteroids(BYTE ucCmd)
 {
     BYTE ucB;
 
     if(ucCmd == 0)
     {
         AstBg(AWTO_AST_BG_NONE);
-        AwtoPmSound(AWTO_AST_SND_STOP);
-        AwtoOsdScreenOff();
-        AwtoSyncPush(AWTO_SYNC_EV_ODEMO, AWTO_AST_ARG_OFF, 0);
+        ArcSndStop();
         return 1;
     }
     if(ucCmd == 2)
@@ -1764,21 +1794,17 @@ BYTE AwtoAsteroids(BYTE ucCmd)
             s_ucShown = 1;
             s_usFrameAt = (WORD)AwtoMs() + AWTO_AST_FRAME_MS;
             osd_tc_show(1);
-            AwtoSyncPush(AWTO_SYNC_EV_ODEMO, AWTO_AST_ARG_ON, AWTO_AST_FROM_ROM);
-        }
-        else
-        {
-            AwtoSyncPush(AWTO_SYNC_EV_ODEMO, AWTO_AST_ARG_FRAME, (BYTE)(g_usAwtoAstStep / AWTO_AST_TICKS));
         }
         return 1;
     }
-    AwtoOsdScreenBegin();
+    ArcSndInit();
+    AwtoAppScreenBegin();
     ScalerOsdSetColorPalette(AWTO_OSD_ZERO, AWTO_OSD_ZERO, AWTO_OSD_ZERO, AWTO_OSD_ZERO);
     ScalerOsdSetColorPalette(AWTO_AST_BG, AWTO_AST_BG_R, AWTO_AST_BG_G, AWTO_AST_BG_B);
     ScalerOsdSetColorPalette(AWTO_AST_FG, AWTO_RGB_PHOSPHOR_GREEN);                 // same green as the diagnostic console text
     ScalerOsd2FontFunction(_DISABLE);
     AwtoOsdRowCmds(AWTO_AST_ROWS, AWTO_AST_TH, AWTO_AST_COLS);
-    AwtoOsdMap1(AWTO_AST_COLS, AWTO_AST_ROWS, (AWTO_AST_FG << AWTO_AST_FG_SHIFT) | AWTO_AST_BG);   // one char command per cell, glyph id = cell index
+    ArcOsdMap1(AWTO_AST_COLS, AWTO_AST_ROWS, (AWTO_AST_FG << AWTO_AST_FG_SHIFT) | AWTO_AST_BG);   // one char command per cell, glyph id = cell index
     AwtoOsdPlaceScaleUp(AWTO_AST_POS_H, AWTO_AST_POS_V, AWTO_AST_COLS, AWTO_AST_ROWS, AWTO_AST_SU_FACTOR);
     osd_canvas_init(&g_scCv, 1, AWTO_AST_BAND_ROWS, g_aucScPix, AWTO_AST_BAND_ROWS * OSD_TILE_BYTES, g_aucScDirty, OSD_DIRTY_BYTES(1, AWTO_AST_BAND_ROWS));
 #if(AWTO_AST_BANDS == 2)
@@ -1823,4 +1849,24 @@ BYTE AwtoAsteroids(BYTE ucCmd)
     AstNewGame();
     return 0;
 }
-#endif                                                         // _AWTO_SAVER_ASTEROIDS
+
+#pragma place bank(8)
+void AsteroidsInit(void)
+{
+    (void)AwtoAsteroids(1);
+}
+
+#pragma place bank(8)
+void AsteroidsStep(void)                                                            // once per main pass: a time-budgeted slice of the frame
+{
+    ArcSndPoll();
+    (void)AwtoAsteroids(2);
+}
+
+#pragma place bank(8)
+void AsteroidsStop(void)
+{
+    (void)AwtoAsteroids(0);
+}
+
+AWTO_APP(asteroids, AsteroidsInit, AsteroidsStep, ArcKey, AsteroidsStop);

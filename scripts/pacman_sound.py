@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Pac-Man sound sequencer: note tables -> firmware data (fw/audio/snd_data.inc) + WAV preview. Docs: docs/pacman-sound.md
+"""Pac-Man sound sequencer: note tables -> firmware data (fw/games/arcade_snd_data.inc) + WAV preview. Docs: docs/pacman-sound.md
 
 usage: pacman_sound.py [--k-hz HZ] [--inc PATH] [--wav-dir DIR] [--wave square|sine] [--no-inc] [--no-wav]
   - Tracks: intro jingle, waka (loops), death glissando, alert, ghost-eat sweep, fruit, siren x 3 speeds (loop), frightened (loop).
@@ -193,20 +193,20 @@ def inc_text(k_hz: float) -> str:
         lines.append(f"#define AWTO_PS_OFF_{name.upper()} {off}")
         lines.append(f"#define AWTO_PS_LOOP_{name.upper()} {1 if loop else 0}")
     lines.append(f"#define AWTO_PS_BYTES {len(blob)}")
-    lines.append("#pragma place group(audio_11)                      // data, tables and their reader (PsByte) share the bank")
+    lines.append("#pragma place bank(13)                      // data, tables and their reader (SndByte) share the bank")
     per_line = 20
     wrapped = [", ".join(f"0x{b:02X}" for b in blob[i:i + per_line]) + "," for i in range(0, len(blob), per_line)]
     lines.append(f"#define AWTO_PS_TRK {len(blob)}                       // track table after the note data: {{offset lo, offset hi, priority, loops}} per track")
-    lines.append(f"#define AWTO_PS_CMD {len(blob) + TRK_BYTES * len(TRACKS)}                       // cmd table after it: {{track, sync event, 1 = event value is the cmd}} per cmd")
+    lines.append(f"#define AWTO_PS_CMD {len(blob) + TRK_BYTES * len(TRACKS)}                       // cmd table after it: {{track, 0, 1 = event value is the cmd}} per cmd")
     lines.append(f"#define AWTO_PS_TRACKS {len(TRACKS)}")
     lines.append(f"#define AWTO_PS_CMDS {len(CMDS)}")
-    lines.append("static const __code BYTE g_aucPsData[AWTO_PS_BYTES + AWTO_PS_TRACKS * 4 + AWTO_PS_CMDS * 3] = {")
+    lines.append("static const __code BYTE g_aucArcSndData[AWTO_PS_BYTES + AWTO_PS_TRACKS * 4 + AWTO_PS_CMDS * 3] = {")
     lines += ["    " + w for w in wrapped]
     for (name, loop), off in zip(TRACKS, offs):
         lines.append(f"    0x{off & 0xFF:02X}, 0x{off >> 8:02X}, {PRIORITY[name]}, {1 if loop else 0},   // {name}")
     names = [n for n, _ in TRACKS]
     for i, (tr, ev, arg) in enumerate(CMDS):
-        lines.append(f"    {names.index(tr) if tr else 'AWTO_PS_TRACK_NONE'}, {ev}, {arg},   // cmd {i}" + ("" if tr else " (handled by the player)"))
+        lines.append(f"    {names.index(tr) if tr else 'AWTO_PS_TRACK_NONE'}, 0, {arg},   // cmd {i}" + ("" if tr else " (handled by the player)"))
     lines.append("};")
     return "\n".join(lines) + "\n"
 
@@ -219,7 +219,7 @@ def main():
     root = repo_root()
     ap = argparse.ArgumentParser()
     ap.add_argument("--k-hz", type=float, default=PS_K_DEFAULT_HZ)
-    ap.add_argument("--inc", type=Path, default=root / "fw/audio/snd_data.inc")
+    ap.add_argument("--inc", type=Path, default=root / "fw/games/arcade_snd_data.inc")
     ap.add_argument("--wav-dir", type=Path, default=root / "tmp/pacman_sound")
     ap.add_argument("--wave", choices=("square", "sine"), default="square", help="WAV timbre (the chip plays a sine)")
     ap.add_argument("--no-inc", action="store_true")

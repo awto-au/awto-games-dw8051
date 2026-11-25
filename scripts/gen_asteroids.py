@@ -29,7 +29,7 @@ ID_DIGIT = ID_FLAME + STEPS
 N_CHARS = 5                     # info-line letters after the digits: x . F P S (fw/games/asteroids.c AWTO_AST_CH_*)
 N_SHAPES = ID_DIGIT + 10 + N_CHARS
 INT8_MAX = 127
-CODE_BANK = 8                   # data and its readers (fw/games/asteroids.c) share this bank; bank 8 had the most room, bank 13 only ~3 KB (message table reserve)
+CODE_BANK = 8                   # arcade image: data and all code of fw/games/asteroids.c pinned to one bank (docs/arcade-image.md)
 
 # own outlines (fallback and digits); units as the ROM shapes: rocks +-32, saucer +-40 x, ship tip radius ~56, digits 8 x 12
 FB_ROCK_R = ((30, 24, 32, 26, 31, 22, 28, 32, 25, 30, 23, 29),

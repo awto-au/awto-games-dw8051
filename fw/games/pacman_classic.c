@@ -1,16 +1,13 @@
 #include <stdint.h>
 #include "UserCommonInclude.h"
-#if(_AWTO_SAVER_PACMAN == _ON)                                        // saver not in the image when _OFF (RL6449_Project.h)
+#include "AwtoApps.h"
+#include "arcade.h"
 #include "pacman_classic_data.inc"
 
-// Classic-layout Pac-Man demo on the unit (data: scripts/gen_pacman_classic.py): the arcade's 28 x 36 tile grid, 12 x 12 visible tiles
-// (12 x 18 glyphs, row height 12), outline walls, 1-bit Pac-Man / dots / text, 2-bit ghosts (body, white eye, blue pupil), scaled up by
-// the OSD scale-up engine to the panel height (ratio 64 / AWTO_PC_SU_FACTOR); recorded demo (game steps of 2^AWTO_PC_SUB_SHIFT sub-steps: sprites move 12 / that px per call), host-paced by scripts/pacman_unit.py.
-//   test cmd 0xB7: draw the maze   0xB8: next step (after the last one the maze is redrawn)   0xB9: off
-// SRAM layout: row commands from 0, end word, char commands from AWTO_PC_FS_BASE, glyph words from AWTO_PC_FONT_BASE (1-bit glyphs, then the
-// 2-bit glyphs at 18 words * the 2-bit offset). Sync line E9 0x73 (drawn) / 0x74 (value = step) / 0x75 (off).
-extern void osd_tc_show(BYTE ucOn);
-extern void osd_tc_close(void);
+// Pac-Man app: recorded classic-layout demo (data: scripts/gen_pacman_classic.py): the arcade's 28 x 36 tile grid, 12 x 12 visible tiles
+// (12 x 18 glyphs, row height 12), outline walls, 1-bit Pac-Man / dots / text, 2-bit ghosts, scaled up by the OSD scale-up engine
+// (ratio 64 / AWTO_PC_SU_FACTOR). One game step = 2^AWTO_PC_SUB_SHIFT sub-steps, paced here with AwtoAppMs (was the saver loop).
+// SRAM layout: row commands from 0, end word, char commands from AWTO_PC_FS_BASE, glyph words from AWTO_PC_FONT_BASE.
 
 #define AWTO_PC_CELLS                           (AWTO_PC_COLS * AWTO_PC_ROWS)
 #define AWTO_PC_FS_BASE                         (AWTO_PC_ROWS + 1)
@@ -37,9 +34,9 @@ extern void osd_tc_close(void);
 #define AWTO_PC_POS_OFFSET_V                    0x04
 #define AWTO_PC_POS_H                           274                 // hd units of 4 panel px: (3840 - 1646) / 2 centres the maze
 #define AWTO_PC_ZERO                            0x00
-#define AWTO_PC_KICK_MASK                       0x7F                // kick the watchdog every 128 data port bytes: the load is ~14 KB, near the 586 ms bite time
-#define PC_KICK(i)                              do { if(((i) & AWTO_PC_KICK_MASK) == AWTO_PC_ZERO) { AWTO_XFR(AWTO_R_WATCHDOG_TIMER) |= AWTO_F_WATCHDOG_TIMER_CLR_WDT; } } while(0)
-#define AWTO_PC_SND_INTRO                       0                   // AwtoPmSound(cmd - AWTO_TC_PACMAN_SND): 0 intro, 1 waka (loops), 2 death, 3 calibration, 4 stop
+#define AWTO_PC_KICK_MASK                       0x7F                // feed the watchdog every 128 data port bytes
+#define PC_KICK(i)                              do { if(((i) & AWTO_PC_KICK_MASK) == AWTO_PC_ZERO) { AwtoAppFeed(); } } while(0)
+#define AWTO_PC_SND_INTRO                       0                   // ArcSnd cmd ids (arcade_snd.c): 0 intro, 1 waka (loops), 2 death, 4 stop, 6 ghost, 7 fruit, 8 waka off
 #define AWTO_PC_SND_WAKA                        1
 #define AWTO_PC_SND_DEATH                       2
 #define AWTO_PC_SND_STOP                        4
@@ -50,58 +47,60 @@ extern void osd_tc_close(void);
 #define AWTO_PC_BLOCK_ROT_BYTES                 18                  // the visible 12 of its 18 rows (6 words); the rest is padding
 #define AWTO_PC_BLOCK_ROT_WORDS                 6
 #define AWTO_PC_PX_PER_HD                       4                   // OSD horizontal position unit: 4 panel px
-#define AWTO_PC_ARG_ON                          0x73
-#define AWTO_PC_ARG_STEP                        0x74
-#define AWTO_PC_ARG_OFF                         0x75
+#define AWTO_PC_SUBS                            4                   // sub-steps per game step
+#define AWTO_PC_SUB_MS                          31UL                // sub-step period; the last one of a step takes the rest of AWTO_PC_STEP_MS
+#define AWTO_PC_STEP_MS                         125UL               // game step = 8 steps/s: sub-steps 31, 31, 31, 32 ms
 
-static __xdata WORD s_usStep;
+__xdata WORD g_usAwtoPcStep;                                      // game step (scripts/arcade_sim.py)
+static __xdata WORD s_usTick;                           // scheduled time of the last sub-step (AwtoMs low word)
+static __xdata BYTE s_ucSub;                            // sub-step 0..AWTO_PC_SUBS-1
 __xdata BYTE g_ucAwtoPcFactor = AWTO_PC_SU_FACTOR;      // scale-up factor (0 = off), host-settable for tuning
 __xdata WORD g_usAwtoPcPosH = AWTO_PC_POS_H;            // WORD: the centred position is above 255
 __xdata WORD g_usAwtoPcPosV;
 
-#pragma place group(pacman_12)                      // each reader sits in the bank of the table it reads (a pragma pins only the next definition)
+#pragma place bank(6)                      // each reader sits in the bank of the table it reads (a pragma pins only the next definition)
 static BYTE PcPal(BYTE ucK)
 {
     return g_pcPal[ucK];
 }
 
-#pragma place group(pacman_12)
+#pragma place bank(6)
 static BYTE PcGlyph(WORD usK)
 {
     return g_pcGlyph[usK];
 }
 
-#pragma place group(pacman_12)
+#pragma place bank(6)
 static BYTE PcStyle(BYTE ucK)
 {
     return g_pcStyle[ucK];
 }
 
-#pragma place group(pacman_13)
+#pragma place bank(6)
 static BYTE PcCell(WORD usK)
 {
     return g_pcCell[usK];
 }
 
-#pragma place group(pacman_12)
+#pragma place bank(6)
 static BYTE PcIdx(WORD usK)
 {
     return g_pcIdx[usK];
 }
 
-#pragma place group(pacman_12)
+#pragma place bank(6)
 static BYTE PcDeltaA(WORD usK)
 {
     return g_pcDeltaA[usK];
 }
 
-#pragma place group(pacman_12)
+#pragma place bank(6)
 static BYTE PcEvt(WORD usStep)
 {
     return g_pcEvt[usStep];
 }
 
-#pragma place group(pacman_11)
+#pragma place bank(6)
 static BYTE PcDeltaB(WORD usK)
 {
     return g_pcDeltaB[usK];
@@ -175,66 +174,60 @@ static void PcStep(WORD usStep)
     }
 }
 
-void AwtoPacmanClassic(BYTE ucCmd)
+static void PcAdvance(void)                                             // next step: its cell updates + sound events
+{
+    BYTE ucB;
+    BYTE ucEv;
+
+    if(g_usAwtoPcStep >= AWTO_PC_STEPS)
+    {
+        PcMaze();                                                       // after the last step: the maze from the start
+        g_usAwtoPcStep = 0;
+    }
+    PcStep(g_usAwtoPcStep);
+    ucEv = PcEvt(g_usAwtoPcStep >> AWTO_PC_SUB_SHIFT);                        // per game step: low nibble = sound event (first sub-step only), high nibble = background state (gen_pacman_classic.py)
+    ucB = ucEv >> AWTO_PC_EV_BG_SHIFT;
+    ucEv = ((g_usAwtoPcStep & AWTO_PC_SUB_MASK) == 0) ? (ucEv & AWTO_PC_EV_EV_MASK) : AWTO_PC_EV_NONE;
+    if(ucEv == AWTO_PC_EV_INTRO)
+    {
+        ArcSnd(AWTO_PC_SND_INTRO);
+    }
+    else if(ucEv == AWTO_PC_EV_WAKA_ON)
+    {
+        ArcSnd(AWTO_PC_SND_WAKA);
+    }
+    else if(ucEv == AWTO_PC_EV_DEATH)
+    {
+        ArcSnd(AWTO_PC_SND_DEATH);
+    }
+    else if(ucEv == AWTO_PC_EV_GHOST)
+    {
+        ArcSnd(AWTO_PC_SND_GHOST);
+    }
+    else if(ucEv == AWTO_PC_EV_FRUIT)
+    {
+        ArcSnd(AWTO_PC_SND_FRUIT);
+    }
+    else if(ucEv == AWTO_PC_EV_WAKA_OFF)
+    {
+        ArcSnd(AWTO_PC_SND_WAKA_OFF);
+    }
+    else if(ucEv == AWTO_PC_EV_STOP)
+    {
+        ArcSnd(AWTO_PC_SND_STOP);
+    }
+    ArcSndBg(ucB);                                                 // siren / frightened state; the player acts on a change
+    g_usAwtoPcStep++;
+}
+
+void PacmanInit(void)
 {
     WORD usI;
     BYTE ucB;
     BYTE ucK;
-    BYTE ucEv;
 
-    if(ucCmd == 0)
-    {
-        osd_tc_close();
-        ScalerOsdScaleUpOnOff(_DISABLE);
-        AwtoPmSound(AWTO_PC_SND_STOP);
-        AwtoSyncPush(AWTO_SYNC_EV_ODEMO, AWTO_PC_ARG_OFF, 0);
-        return;
-    }
-    if(ucCmd == 2)                                                          // next step: its cell updates
-    {
-        if(s_usStep >= AWTO_PC_STEPS)
-        {
-            PcMaze();                                                       // after the last step: the maze from the start
-            s_usStep = 0;
-        }
-        PcStep(s_usStep);
-        ucEv = PcEvt(s_usStep >> AWTO_PC_SUB_SHIFT);                        // per game step: low nibble = sound event (first sub-step only), high nibble = background state (gen_pacman_classic.py)
-        ucB = ucEv >> AWTO_PC_EV_BG_SHIFT;
-        ucEv = ((s_usStep & AWTO_PC_SUB_MASK) == 0) ? (ucEv & AWTO_PC_EV_EV_MASK) : AWTO_PC_EV_NONE;
-        if(ucEv == AWTO_PC_EV_INTRO)
-        {
-            AwtoPmSound(AWTO_PC_SND_INTRO);
-        }
-        else if(ucEv == AWTO_PC_EV_WAKA_ON)
-        {
-            AwtoPmSound(AWTO_PC_SND_WAKA);
-        }
-        else if(ucEv == AWTO_PC_EV_DEATH)
-        {
-            AwtoPmSound(AWTO_PC_SND_DEATH);
-        }
-        else if(ucEv == AWTO_PC_EV_GHOST)
-        {
-            AwtoPmSound(AWTO_PC_SND_GHOST);
-        }
-        else if(ucEv == AWTO_PC_EV_FRUIT)
-        {
-            AwtoPmSound(AWTO_PC_SND_FRUIT);
-        }
-        else if(ucEv == AWTO_PC_EV_WAKA_OFF)
-        {
-            AwtoPmSound(AWTO_PC_SND_WAKA_OFF);
-        }
-        else if(ucEv == AWTO_PC_EV_STOP)
-        {
-            AwtoPmSound(AWTO_PC_SND_STOP);
-        }
-        AwtoPmSoundBg(ucB);                                                 // siren / frightened state; the player acts on a change
-        AwtoSyncPush(AWTO_SYNC_EV_ODEMO, AWTO_PC_ARG_STEP, (BYTE)s_usStep);
-        s_usStep++;
-        return;
-    }
-    AwtoOsdScreenBegin();                                                   // our own OSD off, windows closed, rotation latched, state reset
+    ArcSndInit();
+    AwtoAppScreenBegin();                                                   // OSD reset, rotation latched, popup hold
     for(usI = 0; usI < AWTO_PC_PAL_N; usI++)
     {
         ScalerOsdSetColorPalette((BYTE)usI, PcPal((BYTE)(AWTO_PC_RGB * usI + AWTO_PC_R)), PcPal((BYTE)(AWTO_PC_RGB * usI + AWTO_PC_G)), PcPal((BYTE)(AWTO_PC_RGB * usI + AWTO_PC_B)));
@@ -276,8 +269,34 @@ void AwtoPacmanClassic(BYTE ucCmd)
         ScalerOsdScaleUpBoundaryCodition(_OSD_SCALING_BOUNDARY_NEIGHTBOOR);
         ScalerOsdScaleUpOnOff(_ENABLE);
     }
-    s_usStep = 0;
+    g_usAwtoPcStep = 0;
+    s_ucSub = 0;
+    s_usTick = (WORD)AwtoAppMs();
     osd_tc_show(1);
-    AwtoSyncPush(AWTO_SYNC_EV_ODEMO, AWTO_PC_ARG_ON, 0);
 }
-#endif                                                         // _AWTO_SAVER_PACMAN
+
+void PacmanStep(void)                                                       // once per main pass
+{
+    WORD usPeriod = (s_ucSub == (AWTO_PC_SUBS - 1)) ? (WORD)(AWTO_PC_STEP_MS - (AWTO_PC_SUBS - 1) * AWTO_PC_SUB_MS) : (WORD)AWTO_PC_SUB_MS;
+    WORD usNow = (WORD)AwtoAppMs();
+
+    ArcSndPoll();
+    if((WORD)(usNow - s_usTick) < usPeriod)
+    {
+        return;
+    }
+    s_usTick += usPeriod;                                                   // advances by the period, not from now
+    s_ucSub = (s_ucSub + 1) % AWTO_PC_SUBS;
+    if((WORD)(usNow - s_usTick) >= AWTO_PC_STEP_MS)
+    {
+        s_usTick = usNow;                                                   // far behind (a long pass): resync, no burst of steps
+    }
+    PcAdvance();
+}
+
+void PacmanStop(void)
+{
+    ArcSndStop();
+}
+
+AWTO_APP(pacman, PacmanInit, PacmanStep, ArcKey, PacmanStop);

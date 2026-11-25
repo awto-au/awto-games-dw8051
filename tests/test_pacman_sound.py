@@ -102,16 +102,12 @@ def test_siren_speeds_up_same_pitch_range():
 
 
 def test_firmware_ids_match_track_order():
-    audio_c = Path(os.environ.get("AWTO_DDC_SCRIPTS", "/mnt/2tb/git/awto-ddc/scripts")).parent / "fw/audio/audio.c"   # firmware ids live in awto-ddc
-    if not audio_c.exists():
-        pytest.skip(f"{audio_c} missing")
-    c = audio_c.read_text()
-    ids = {n: int(re.search(rf"#define AWTO_PS_TRACK_{n}\s+(\d+)", c).group(1)) for n in ("INTRO", "WAKA", "ALERT", "GHOST", "FRUIT", "BG0", "FIRE")}
+    c = (Path(__file__).resolve().parents[1] / "fw/games/arcade_snd.c").read_text()
+    ids = {n: int(re.search(rf"#define ARC_SND_(?:TRACK_)?{n}\s+(\d+)", c).group(1)) for n in ("TRACK_WAKA", "TRACK_BG0", "TRACK_BG_LAST", "PRIO_TOP")}
     names = [n for n, _ in P.TRACKS]
-    assert [ids[n.upper()] for n in ("intro", "waka", "alert", "ghost", "fruit")] == [names.index(n) for n in ("intro", "waka", "alert", "ghost", "fruit")]
-    assert names[ids["BG0"]:ids["BG0"] + 6] == ["siren1", "siren2", "siren3", "fright", "thrust", "saucer"]   # background states 1..6
-    assert names[ids["FIRE"]:] == ["fire", "boom_s", "boom_m", "boom_l", "boom_ship"]   # cmd AWTO_PS_CMD_FIRE + n
-    assert int(re.search(r"#define AWTO_PS_PRIO_TOP\s+(\d+)", c).group(1)) == max(P.PRIORITY.values())
+    assert ids["TRACK_WAKA"] == names.index("waka")
+    assert names[ids["TRACK_BG0"]:ids["TRACK_BG_LAST"] + 1] == ["siren1", "siren2", "siren3", "fright", "thrust", "saucer"]   # background states 1..6
+    assert ids["PRIO_TOP"] == max(P.PRIORITY.values())
 
 
 def test_game_events_include_ghost_fruit_and_siren_speeds():

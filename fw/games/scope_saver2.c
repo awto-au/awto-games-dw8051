@@ -1,13 +1,14 @@
 #include <stdint.h>
 #include "UserCommonInclude.h"
-#if(_AWTO_SAVER_SCOPE2 == _ON)                                        // saver not in the image when _OFF (RL6449_Project.h)
-#include "../../tools/osd_lines/osd_lines.h"                                // tile geometry only
+#include "AwtoApps.h"
+#include "../../ddc/tools/osd_lines/osd_lines.h"                                // tile geometry only
+#include "arcade.h"
 
 // Scope screensaver 2 (docs/screensaver.md): red graticule with minor ticks, green pulse trace, two dotted cursors on its 10 % / 90 % points,
 // level marks, readouts. The whole panel is one raster (scope2_data.inc: 480 x 270 = 40 x 15 tiles of 12 x 18, 2-bit glyphs) scaled up by the OSD engine.
 // Static tiles (graticule, labels) are generated (scripts/gen_scope2.py) and uploaded once; per frame only the tiles the trace, the cursors
 // and the delta t number touch are drawn, one column per call, into slots of a ring above the static ids.
-//   AwtoScopeSaver2(1) draw   (2) next column (returns 1 at the end of a frame)   (0) off
+//   AwtoScopeSaver2(1) draw   (2) next column (returns 1 at the end of a frame); the app hooks at the end call these
 extern __xdata uint8_t g_aucScPix[];                                                // tile buffer shared with Asteroids, saver_canvas.c (one saver at a time): green plane, red plane
 
 #include "scope2_data.inc"
@@ -60,9 +61,6 @@ typedef char s_tS2PanelCheck[((AWTO_S2_SU_FACTOR * (long)_PANEL_DH_WIDTH == AWTO
 #define AWTO_S2_FRAME_MS                        40                                  // frame schedule: 25 fps cap (Dan 2026-11-19); a frame that needs longer runs back to back
 #define AWTO_S2_HALF_MS                         0x8000                              // WORD ms difference below this = the time has passed
 #define AWTO_S2_NUM_CHARS                       8
-#define AWTO_S2_ARG_ON                          0x7B
-#define AWTO_S2_ARG_FRAME                       0x7C
-#define AWTO_S2_ARG_OFF                         0x7D
 
 __xdata WORD g_usAwtoS2Frame;                                                       // frame counter (scripts/scope2_sim.py)
 static __xdata BYTE s_ucCol;
@@ -94,6 +92,7 @@ static __xdata BYTE s_ucYsCol;                                                  
 static __xdata BYTE s_ucNumDirty;                                                   // readout tiles need a redraw
 static __xdata char s_acNum[AWTO_S2_NUM_CHARS];
 
+#pragma place bank(13)
 static void S2Run(BYTE ucX, BYTE ucLo, BYTE ucHi)                                   // vertical run (tile coords, both ends inside the tile) in the green plane
 {
     BYTE ucY;
@@ -130,13 +129,13 @@ static void S2Run(BYTE ucX, BYTE ucLo, BYTE ucHi)                               
     }
 }
 
-#pragma place group(scope2_12)                      // data and its reader share a bank (docs/banking: movc reads the running bank)
+#pragma place bank(13)                      // data and its reader share a bank (docs/banking: movc reads the running bank)
 static BYTE S2CellId(WORD usCell)
 {
     return s_tS2Cell[usCell];
 }
 
-#pragma place group(scope2_12)
+#pragma place bank(13)
 static void S2BaseCopy(BYTE ucId)
 {
     BYTE ucI;
@@ -148,17 +147,18 @@ static void S2BaseCopy(BYTE ucId)
     }
 }
 
+#pragma place bank(13)
 static void S2Base(BYTE ucId)                                                       // both planes of a static tile -> g_aucScPix (green, then red); Rotate 180: each plane turned in place
 {
     S2BaseCopy(ucId);
     if(g_ucAwtoOsdRot != 0)
     {
-        AwtoOsdTurn(g_aucScPix, AWTO_S2_PLANE_BYTES);
-        AwtoOsdTurn(&g_aucScPix[AWTO_S2_PLANE_BYTES], AWTO_S2_PLANE_BYTES);
+        AwtoAppTurn(g_aucScPix, AWTO_S2_PLANE_BYTES);
+        AwtoAppTurn(&g_aucScPix[AWTO_S2_PLANE_BYTES], AWTO_S2_PLANE_BYTES);
     }
 }
 
-#pragma place group(scope2_12)
+#pragma place bank(13)
 static BYTE S2Pulse(WORD usX)                                                       // 0..255 pulse height at raster x, linear between table steps
 {
     WORD usD;
@@ -183,7 +183,7 @@ static BYTE S2Pulse(WORD usX)                                                   
     return (BYTE)((int16_t)ucA + ((int16_t)ucB - (int16_t)ucA) * ucR / s_ucSpread);
 }
 
-#pragma place group(scope2_11)
+#pragma place bank(13)
 static void S2Char(char cC, int16_t sX, int16_t sY, BYTE ucScale)                   // into the tile buffer, clipped to the tile
 {
     BYTE ucI;
@@ -242,7 +242,7 @@ static void S2Char(char cC, int16_t sX, int16_t sY, BYTE ucScale)               
     }
 }
 
-#pragma place group(scope2_11)
+#pragma place bank(13)
 static void S2Text(const __xdata char *pcS, int16_t sX, int16_t sY, BYTE ucScale)
 {
     while(*pcS != 0)
@@ -253,12 +253,13 @@ static void S2Text(const __xdata char *pcS, int16_t sX, int16_t sY, BYTE ucScale
     }
 }
 
-#pragma place group(scope2_12)
+#pragma place bank(13)
 static int16_t S2Y(WORD usX)
 {
     return AWTO_S2_BASE_Y - (int16_t)(((WORD)S2Pulse(usX) * AWTO_S2_AMP) / AWTO_S2_PULSE_PEAK);
 }
 
+#pragma place bank(13)
 static void S2Uint(unsigned long ulV, BYTE ucDigits, BYTE ucPos)                    // zero padded decimal into s_acNum from ucPos
 {
     BYTE ucK;
@@ -270,6 +271,7 @@ static void S2Uint(unsigned long ulV, BYTE ucDigits, BYTE ucPos)                
     }
 }
 
+#pragma place bank(13)
 static void S2MapWord(WORD usCell, BYTE ucId)                                       // char command: glyph id, colours c0 bg, c1 green (plane A = low bit, docs/osd-hw-tests.md T9), c2 red, c3 green
 {
     if(g_ucAwtoOsdRot != 0)                                                         // turned 180 (docs/osd/rotation.md): the mirrored cell
@@ -282,6 +284,7 @@ static void S2MapWord(WORD usCell, BYTE ucId)                                   
     AWTO_OSD_PORT((BYTE)(((AWTO_S2_PAL_BG & 3) << 6) | ((AWTO_S2_PAL_RED & 7) << 3) | (AWTO_S2_PAL_GREEN & 7)));
 }
 
+#pragma place bank(13)
 static void S2Glyph(BYTE ucId)                                                      // g_aucScPix (green plane, red plane; data port order, already turned) -> glyph slot
 {
     BYTE ucI;
@@ -293,6 +296,7 @@ static void S2Glyph(BYTE ucId)                                                  
     }
 }
 
+#pragma place bank(13)
 static BYTE S2Alloc(void)
 {
     BYTE ucId = s_ucNext;
@@ -301,6 +305,7 @@ static BYTE S2Alloc(void)
     return ucId;
 }
 
+#pragma place bank(13)
 static void S2Trace(void)                                                           // the trace of the column into the tile (green plane): per pixel column the run from y(x - 1) to y(x), plus THICK
 {
     __data BYTE ucX;
@@ -325,11 +330,13 @@ static void S2Trace(void)                                                       
     }
 }
 
+#pragma place bank(13)
 static BYTE S2IsNum(BYTE ucCol, BYTE ucRow)
 {
     return (BYTE)((ucCol >= AWTO_S2_NUM_COL0) && (ucCol <= AWTO_S2_NUM_COL1) && (ucRow >= AWTO_S2_NUM_ROW0) && (ucRow <= AWTO_S2_NUM_ROW1));
 }
 
+#pragma place bank(13)
 static BYTE S2Home(BYTE ucCol, BYTE ucRow, WORD usCell)                             // glyph id of a cell at rest: its readout slot, else its static tile
 {
     if(S2IsNum(ucCol, ucRow))
@@ -339,6 +346,7 @@ static BYTE S2Home(BYTE ucCol, BYTE ucRow, WORD usCell)                         
     return S2CellId(usCell);
 }
 
+#pragma place bank(13)
 static void S2Fill(BYTE ucCol, BYTE ucRow, BYTE ucBase, BYTE ucId)                  // draw one dynamic tile on its static base and upload it
 {
     BYTE ucY;
@@ -365,6 +373,7 @@ static void S2Fill(BYTE ucCol, BYTE ucRow, BYTE ucBase, BYTE ucId)              
     S2Glyph(ucId);
 }
 
+#pragma place bank(13)
 static void S2NumDraw(void)                                                         // one readout tile (own slot), the next of s_ucNumLeft: redrawn when the number changes
 {
     BYTE ucC10 = s_ucCur10;
@@ -383,6 +392,7 @@ static void S2NumDraw(void)                                                     
     s_ucCur90 = ucC90;
 }
 
+#pragma place bank(13)
 static void S2ColBegin(BYTE ucCol)                                                  // trace points and dynamic rows of a column; the rows follow in S2ColRows
 {
     __data WORD usOx = (WORD)ucCol * AWTO_S2_TW;
@@ -433,6 +443,7 @@ static void S2ColBegin(BYTE ucCol)                                              
     s_ucRow = 0;
 }
 
+#pragma place bank(13)
 static BYTE S2ColRows(BYTE ucCol, unsigned long ulStart)                           // rows from s_ucRow on until the time budget is used; 1 = column done
 {
     __data BYTE ucR;
@@ -495,6 +506,7 @@ static BYTE S2ColRows(BYTE ucCol, unsigned long ulStart)                        
     return 1;
 }
 
+#pragma place bank(13)
 static void S2Params(void)                                                          // pulse position / edge speed of this frame, cursors on its 10 % / 90 % points, delta t text
 {
     unsigned long ulPs;
@@ -530,22 +542,17 @@ static void S2Params(void)                                                      
     }
 }
 
-BYTE AwtoScopeSaver2(BYTE ucCmd)
+#pragma place bank(13)
+static BYTE AwtoScopeSaver2(BYTE ucCmd)
 {
     WORD usI;
     BYTE ucI;
     unsigned long ulStart;
 
-    if(ucCmd == 0)
-    {
-        AwtoOsdScreenOff();
-        AwtoSyncPush(AWTO_SYNC_EV_ODEMO, AWTO_S2_ARG_OFF, 0);
-        return 1;
-    }
     if(ucCmd == 2)
     {
         ulStart = AwtoMs();
-        AWTO_XFR(AWTO_R_WATCHDOG_TIMER) |= AWTO_F_WATCHDOG_TIMER_CLR_WDT;
+        AwtoAppFeed();
         do                                                              // bands: up to the budget per call, then back to the main loop (DDC/CI, keys, watchdog)
         {
             if(s_ucFrameOn == 0)
@@ -594,15 +601,13 @@ BYTE AwtoScopeSaver2(BYTE ucCmd)
             s_ucShown = 1;
             s_usFrameAt = (WORD)ulStart + AWTO_S2_FRAME_MS;
             osd_tc_show(1);
-            AwtoSyncPush(AWTO_SYNC_EV_ODEMO, AWTO_S2_ARG_ON, 0);
         }
         else
         {
-            AwtoSyncPush(AWTO_SYNC_EV_ODEMO, AWTO_S2_ARG_FRAME, (BYTE)g_usAwtoS2Frame);
         }
         return 1;
     }
-    AwtoOsdScreenBegin();
+    AwtoAppScreenBegin();
     ScalerOsdSetColorPalette(AWTO_OSD_ZERO, AWTO_OSD_ZERO, AWTO_OSD_ZERO, AWTO_OSD_ZERO);
     ScalerOsdSetColorPalette(AWTO_S2_PAL_BG, AWTO_S2_BG_R, AWTO_S2_BG_G, AWTO_S2_BG_B);
     ScalerOsdSetColorPalette(AWTO_S2_PAL_RED, AWTO_S2_RED_R, AWTO_S2_RED_G, AWTO_S2_RED_B);
@@ -611,7 +616,7 @@ BYTE AwtoScopeSaver2(BYTE ucCmd)
     AwtoOsdRowCmds(AWTO_S2_ROWS, AWTO_S2_TH, AWTO_S2_COLS);
     for(ucI = 0; ucI < AWTO_S2_STATIC_N; ucI++)                         // static tiles: both planes
     {
-        AWTO_XFR(AWTO_R_WATCHDOG_TIMER) |= AWTO_F_WATCHDOG_TIMER_CLR_WDT;
+        AwtoAppFeed();
         S2Base(ucI);
         S2Glyph(ucI);
     }
@@ -619,7 +624,7 @@ BYTE AwtoScopeSaver2(BYTE ucCmd)
     {
         if((usI & (AWTO_S2_WDT_EVERY - 1)) == 0)
         {
-            AWTO_XFR(AWTO_R_WATCHDOG_TIMER) |= AWTO_F_WATCHDOG_TIMER_CLR_WDT;
+            AwtoAppFeed();
         }
         S2MapWord(usI, S2Home((BYTE)(usI % AWTO_S2_COLS), (BYTE)(usI / AWTO_S2_COLS), usI));
     }
@@ -645,4 +650,17 @@ BYTE AwtoScopeSaver2(BYTE ucCmd)
     s_usDrift = 0;
     return 0;
 }
-#endif                                                         // _AWTO_SAVER_SCOPE2
+
+#pragma place bank(13)
+void Scope2Init(void)
+{
+    (void)AwtoScopeSaver2(1);
+}
+
+#pragma place bank(13)
+void Scope2Step(void)                                                               // once per main pass: columns until the time budget is used
+{
+    (void)AwtoScopeSaver2(2);
+}
+
+AWTO_APP(scope2, Scope2Init, Scope2Step, ArcKey, AWTO_APP_NONE);
