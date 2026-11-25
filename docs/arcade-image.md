@@ -19,7 +19,7 @@ Pac-Man, Asteroids and Scope 2 as awto-ddc extra apps (awto-ddc#345, `ddc/docs/e
 - Ported from the screensavers (awto-ddc `723dc3df^`): `_AWTO_SAVER_*` guards gone, `AwtoAppFeed` for the raw watchdog clears, `AwtoAppScreenBegin` for the screen takeover (the stop path closes it), `AwtoAppTurn` / `AwtoAppGlyph` for the Rotate 180 tile turning, `saver_canvas.c` restored (`AwtoScTile` over `AwtoAppGlyph`, `ArcOsdMap1` = the removed `AwtoOsdMap1`).
 - Pac-Man pacing: 4 sub-steps per 125 ms step with `AwtoAppMs` (was the saver loop); Asteroids and Scope 2 keep their own 40 ms frame schedule inside `step`.
 - Sync-log pushes of the savers (E9 args 0x73..0x75, 0x7B..0x7D, 0x90..0x92) dropped: the framework logs start / stop (line E9 0x79).
-- Sound: `fw/games/arcade_snd.c` = priority / loop / resume sequencer over `AwtoAppSoundTone` (tracks from `scripts/pacman_sound.py`, `arcade_snd_data.inc`). Honours user mute. Limits: issue "Arcade sound: per-note amp cycle".
+- Sound: `fw/games/arcade_snd.c` = priority / loop / resume sequencer over `AwtoAppSoundTone` (tracks from `scripts/pacman_sound.py`, `arcade_snd_data.inc`). Honours user mute. Limits: awto-games-dw8051#2.
 
 ## Pins (`#pragma place bank(N)`, arcade image only)
 - Pac-Man data + readers: bank 6 (`gen_pacman_classic.py` `PACMAN_BANK`; not bank 12: link gate gptr_const_xbank).
@@ -51,18 +51,18 @@ Pac-Man, Asteroids and Scope 2 as awto-ddc extra apps (awto-ddc#345, `ddc/docs/e
 | pacman | muted | 256 sub-steps | 11,209 | 20,730 |
 | scope2 | on / muted | 200 / 200 frames | 5,631 / 5,717 | 67,218 / 66,156 |
 - Idle loop (no app, paced): 23,557 cycles / pass. A running app free-runs the loop (`AwtoLoopBusy`), so the idle value is no floor for the app rows.
-- Sound on adds ~23 k cycles / pass: the blocking amp / DVC waits of every note (see the sound issue).
+- Sound on adds ~23 k cycles / pass: the blocking amp / DVC waits of every note (#2).
 - Display Rotate 180: Scope 2 115,855 / 115,098 cycles / pass (turning the 2-plane tiles); Asteroids 52,786 / 28,015; Pac-Man 49,761 / 20,736.
 - Release image: same ranges (Asteroids 50,757 / 26,441, Pac-Man 50,235 / 20,620, Scope 2 66,666 / 65,541).
 - Per run: start by VCP, MENU stops it, scale-up off after the stop, VCP 0 stops, debug byte starts / stops: all pass (`tmp/arcade_sim/arcade_sim.tsv`). Snapshots show the Pac-Man maze with ghosts, the Asteroids field with HUD and info overlay, the Scope 2 trace.
 - Framework check `ddc/scripts/apps_sim.py` runs only against the example app (`hello`): passes on the example build.
-- Gates: `link`, `isr`, `regs` pass; `magic` lint 0 findings and `poke_loops` 0 unbounded loops when run by hand (the gates themselves fail for a root outside the awto-ddc tree: issue "extra-fw root outside the awto-ddc tree").
+- Gates: `link`, `isr`, `regs` pass; `magic` lint 0 findings and `poke_loops` 0 unbounded loops when run by hand (the gates themselves fail for a root outside the awto-ddc tree: awto-games-dw8051#3).
 
 ## Doom in the same flash (plan, not implemented)
 - Doom format-10 image = 196,608 B = 3 whole 64 KiB banks; non-0xFF 64,549 / 64,512 / 64,558 B. Banks 1 and 2 differ from bank 0 only inside the overlay window 0x5000..0x701C (5,654 B and 8,107 B): unique content 78,310 B.
 - Doom's own common is 0..0x5000 (awto: 0..0x2800), identical in the three banks, so a Doom bank is a complete 64 KiB window, not an awto bank: it carries Doom's bytes at 0..0x2800 and cannot be called through awto bank stubs.
 - Placement: release arcade image ends at bank 10 (11 banks), so Doom takes banks 11, 12, 13; bank 14 spare; bank 15 NVRAM / manifest (`ddc/docs/flash-layout.md`). The dev layout fills all 15 banks: no room, release layout only.
-- Open (issue "Doom in the arcade flash"):
+- Open (awto-games-dw8051#1; unit checks: #4):
   - Hand-off: bank register 0xFFFF is the register Doom's simulator model uses, unverified on the unit. The first instruction after the select executes from the Doom bank at the same address: needs a landing pad in the Doom image at the awto call-site address (reserved ABS area) and the mirror pad for the way back.
   - Doom's bank numbers 0 / 1 / 2 are literals (`fw/doom/projectile_bank.asm`, `mov a,#N`): relocate to 11 / 12 / 13 with an assembler define.
   - While Doom runs, the vectors 0..0x53 are Doom's: no awto Timer2 / debug-link ISR, no watchdog feed (bite 586 ms); Doom needs its own feed.
